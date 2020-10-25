@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
 namespace App\Controller;
-
+use Cake\Core\Configure;
 use Cake\Controller\Controller;
 use Cake\Routing\Router;
 
@@ -51,12 +51,13 @@ class AppController extends Controller
          * see https://book.cakephp.org/4/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
-        $menu = [
-        	['href'=>Router::url(['controller'=>'Accounts', 'action'=>'index']), 'innerHtml'=>__('My Books'), 'id'=>'accounts-link'],
-        	['href'=>Router::url(['controller'=>'Users', 'action'=>'index']), 'innerHtml'=>__('Users'), 'id'=>'users-link'],
-        	['href'=>Router::url(['controller'=>'Tags', 'action'=>'index']), 'innerHtml'=>__('Tags'), 'id'=>'tags-link'],
-        	['href'=>Router::url(['controller'=>'Users', 'action'=>'logout']), 'innerHtml'=>__('Log out'), 'id'=>'logout-link']
+        $menuitems = [
+        	['href'=>['controller'=>'Accounts', 'action'=>'index'], 'innerHtml'=>__('My Books'), 'id'=>'accounts-link'],
+        	['href'=>['controller'=>'Users', 'action'=>'index'], 'innerHtml'=>__('Users'), 'id'=>'users-link'],
+        	['href'=>['controller'=>'Tags', 'action'=>'index'], 'innerHtml'=>__('Tags'), 'id'=>'tags-link'],
+        	['href'=>['controller'=>'Users', 'action'=>'logout'], 'innerHtml'=>__('Log out'), 'id'=>'logout-link']
 		];
-		$this->set('menuitems', $menu);
+		$env = Configure::read('env', '');
+		$this->set(compact('menuitems', 'env'));
     }
 }

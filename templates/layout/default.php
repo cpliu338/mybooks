@@ -44,6 +44,11 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('script') ?>
 </head>
 <body>
+<div style="position:fixed; top:250px; left:115px; opacity:0.5; z-index:99; color:red;">
+ 	<span style="padding-left:50px"><?=$env?></span>
+ 	<span style="padding-left:50px"><?=$env?></span>
+	 <span style="padding-left:50px"><?=$env?></span>
+</div>
 	<?= $this->element('menu') ?>
             <?= $this->cell('Settings') ?>
     <main class="main">
