@@ -1,6 +1,3 @@
-<?php
-use Cake\Routing\Router;
-?>
 <?= $this->Form->create($form, ['id'=>'abbrev-form']) ?>
 <fieldset>
 <?php
@@ -19,7 +16,7 @@ use Cake\Routing\Router;
 <script>
   function getAccount(id, index) {
   	  $.ajax({
-		  url: "<?=Router::url(['controller'=>"Accounts",'action'=>"view"])?>"
+		  url: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"view"])?>"
 		  	+ '/' + id,
 		  dataType: 'json'
   	  }).done(function(data) {
@@ -58,7 +55,7 @@ use Cake\Routing\Router;
 	fieldset.append(realamt);
 	$("fieldset").last().after(fieldset);
     $( "#"+id).autocomplete({
-      source: "<?=Router::url(['controller'=>"Accounts",'action'=>"suggest"])?>",
+      source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",
       minLength: 1,
       select: function( event, ui) {
       	  $("#"+acc_id).val(ui.item.id);

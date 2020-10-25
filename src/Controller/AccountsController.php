@@ -33,12 +33,36 @@ class AccountsController extends AppController
     public function view($id = null)
     {
         $account = $this->Accounts->get($id, [
-            'contain' => ($this->request->is('ajax') ? [] : ['Tags', 'Entries']),
-        ]);
+            'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
+        ]);//debug($account->get('currency'));
+        $entries = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
+        	where(['account_id'=>$account->id 
+        			])->order('Transactions.date1');
+        $account->entries = $entries;
         $this->set(compact('account'));
 		$this->viewBuilder()->setOption('serialize', ['account']);
     }
 
+    /**
+     * Sumary View method
+     *
+     * @param string|null $id Account id.
+     * @return \Cake\Http\Response|null|void Renders view
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function summaryView($id = null)
+    {
+        $account = $this->Accounts->get($id, [
+            'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
+        ]);
+        $entries = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
+        	where(['Accounts.code LIKE'=>$account->code . '%' 
+        			])->order('Transactions.date1');
+        $account->entries = $entries;
+        $this->set(compact('account'));
+		//$this->viewBuilder()->setOption('serialize', ['account']);
+    }
+    
     /**
      * Add method
      *

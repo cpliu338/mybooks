@@ -3,54 +3,48 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Account $account
  */
-use Cake\Routing\Router;
 ?>
 <div class="row">
     <div class="column-responsive column-100">
         <div class="accounts view content">
             <div id="accordion">
             <h3><?= h($account->name) ?> Details</h3>
-            	<?= $this->element('account_view')?>
             <div>
-            <div class="related">
+            	<?= $this->element('account_view')?>
             </div>
-                <h3><?= __('Related Entries') ?></h3>
+            <h3><?= __('Related Tags') ?></h3>
+<div>
+	<?php if (!empty($account->tags)) : ?>
+	<div class="table-responsive">
+		<table>
+			<tr>
+				<th><?= __('Id') ?></th>
+				<th><?= __('Name') ?></th>
+				<th><?= __('Type') ?></th>
+				<th class="actions"><?= __('Actions') ?></th>
+			</tr>
+			<?php foreach ($account->tags as $tags) : ?>
+			<tr>
+				<td><?= h($tags->id) ?></td>
+				<td><?= h($tags->name) ?></td>
+				<td><?= h($tags->type) ?></td>
+				<td class="actions">
+					<?= $this->Html->link(__('View'), ['controller' => 'Tags', 'action' => 'view', $tags->id]) ?>
+					<?= $this->Html->link(__('Edit'), ['controller' => 'Tags', 'action' => 'edit', $tags->id]) ?>
+					<?= $this->Form->postLink(__('Delete'), ['controller' => 'Tags', 'action' => 'delete', $tags->id], ['confirm' => __('Are you sure you want to delete # {0}?', $tags->id)]) ?>
+				</td>
+			</tr>
+			<?php endforeach; ?>
+		</table>
+	</div>
+	<?php endif; ?>
+</div>
+        </div> <!-- accordion -->
+			<h3><?php printf("%s entries (%s)", 
+                h($account->name),  $account->currency);
+                ?></h3>
             <div class="related">
-                <?php if (!empty($account->entries)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <thead><tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Account Id') ?></th>
-                            <th><?= __('Transaction Id') ?></th>
-                            <th><?= __('Status') ?></th>
-                            <th><?= __('Real Amount') ?></th>
-                            <th><?= __('Home Amount') ?></th>
-                            <th><?= __('Date2') ?></th>
-                            <th><?= __('Tags') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr></thead><tbody>
-                        <?php foreach ($account->entries as $entries) : ?>
-                        <tr>
-                            <td><?= h($entries->id) ?></td>
-                            <td><?= h($entries->account_id) ?></td>
-                            <td><?= h($entries->transaction_id) ?></td>
-                            <td><?= h($entries->status) ?></td>
-                            <td><?= h($entries->real_amount) ?></td>
-                            <td><?= h($entries->home_amount) ?></td>
-                            <td><?= h($entries->date2) ?></td>
-                            <td><?= h($entries->tags) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Entries', 'action' => 'view', $entries->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Entries', 'action' => 'edit', $entries->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'Entries', 'action' => 'delete', $entries->id], ['confirm' => __('Are you sure you want to delete # {0}?', $entries->id)]) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody></table>
-                </div>
-                <?php endif; ?>
-            </div>
+            	<?= $this->Element('account_book', ['account'=>$account, 'summary'=>false])?>
             </div>
             <button id="transaction-db" class="transaction-dbcr" style="position:fixed; bottom:40px; right:40px">
             	<?= $account->db_label?>
@@ -58,9 +52,9 @@ use Cake\Routing\Router;
             <button id="transaction-cr" class="transaction-dbcr" style="position:fixed; bottom:40px; right:200px" class="btn-accent">
             	<?= $account->cr_label?>
             </button>
-        </div>
-    </div>
-</div>
+        </div> <!-- accounts view content -->
+    </div> <!-- column-responsive column-100 -->
+</div> <!--row -->
 <div id="dlg-form-add" >
 </div>
 <script>
@@ -74,7 +68,7 @@ function popup_dlg(content) {
 }
 $("#transaction-db").click(function (){
 	$.ajax({
-		url: "<?=Router::url(['controller'=>"Transactions",'action'=>"add",
+		url: "<?=$this->url->build(['controller'=>"Transactions",'action'=>"add",
 				'?'=>['account_id'=>$account->id,
 					'db' => '1']])?>",
 	}).done(function (content) {
@@ -83,7 +77,7 @@ $("#transaction-db").click(function (){
 });
 $("#transaction-cr").click(function (){
 	$.ajax({
-		url: "<?=Router::url(['controller'=>"Transactions",'action'=>"add",
+		url: "<?=$this->url->build(['controller'=>"Transactions",'action'=>"add",
 				'?'=>['account_id'=>$account->id,
 					]])?>",
 	}).done(function (content) {

@@ -23,6 +23,7 @@ use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
+use Cake\Routing\Router;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Authentication\AuthenticationService;
@@ -108,7 +109,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 	public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
 	{
 		$authenticationService = new AuthenticationService([
-			'unauthenticatedRedirect' => '/users/login',
+			'unauthenticatedRedirect' => //'/users/login',
+			Router::url(['controller'=>'Users','action'=>'login']),
 			'queryParam' => 'redirect',
 		]);
 	
@@ -128,7 +130,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 				'username' => 'name',
 				'password' => 'password',
 			],
-			'loginUrl' => '/users/login',
+			'loginUrl' => //'/users/login',
+			Router::url(['controller'=>'Users','action'=>'login'])
 		]);
 	
 		return $authenticationService;
