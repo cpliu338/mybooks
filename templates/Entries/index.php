@@ -32,7 +32,7 @@
                     <td><?= $this->Number->format($entry->real_amount) ?></td>
                     <td><?= $this->Number->format($entry->home_amount) ?></td>
                     <td><?= h($entry->date2) ?></td>
-                    <td><?= h($entry->tags) ?></td>
+                    <td>h($entry->tags)</td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $entry->id]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $entry->id]) ?>
