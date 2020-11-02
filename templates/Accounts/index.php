@@ -31,6 +31,7 @@
                     <td><?= h($account->currency) ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $account->id]) ?>
+                        <?= $this->Html->link(__('Summary'), ['action' => 'summary-view', $account->id]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $account->id]) ?>
                         <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $account->id], ['confirm' => __('Are you sure you want to delete # {0}?', $account->id)]) ?>
                     </td>

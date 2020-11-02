@@ -44,7 +44,8 @@
                 h($account->name),  $account->currency);
                 ?></h3>
             <div class="related">
-            	<?= $this->Element('account_book', ['account'=>$account, 'summary'=>false])?>
+            	<?= $this->Element('account_book', ['account'=>$account,
+            			'bf'=>$bf, 'summary'=>false])?>
             </div>
             <button id="transaction-db" class="transaction-dbcr" style="position:fixed; bottom:40px; right:40px">
             	<?= $account->db_label?>

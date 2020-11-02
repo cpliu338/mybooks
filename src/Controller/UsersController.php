@@ -24,16 +24,15 @@ class UsersController extends AppController
 	*/
 	public function login() {
 		$this->request->allowMethod(['get', 'post']);
-		$this->log(var_export($this->request->getData(), true), 'info');
 		$result = $this->Authentication->getResult();
 		// regardless of POST or GET, redirect if user is logged in
 		if ($result->isValid()) {
-			// redirect to /articles after login success
 			$redirect = $this->request->getQuery('redirect', [
-				'controller' => 'Users',
+				'controller' => 'Accounts',
 				'action' => 'index',
 			]);
-	
+		/*$this->log(var_export($redirect, true), 'info');
+		$redirect is a string, if /cpbooks/accounts => BAD */
 			return $this->redirect($redirect);
 		}
 		// display error if user submitted and authentication failed

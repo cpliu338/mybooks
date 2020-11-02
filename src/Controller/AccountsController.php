@@ -35,14 +35,15 @@ class AccountsController extends AppController
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);//debug($account->get('currency'));
-        $entries = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
-        	where(['account_id'=>$account->id 
-        			])->order('Transactions.date1');
-        $account->entries = $entries;
-        $this->set(compact('account'));
+        $bfDate = '2020-08-01';
+        $condition = ['Entries.account_id'=>$account->id];
+        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
+        	$bfDate);
+		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
+			$bfDate);
+        $this->set(compact('account', 'bf', 'bfDate'));
 		$this->viewBuilder()->setOption('serialize', ['account']);
     }
-
     /**
      * Sumary View method
      *
@@ -55,14 +56,34 @@ class AccountsController extends AppController
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);
-        $entries = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
-        	where(['Accounts.code LIKE'=>$account->code . '%' 
-        			])->order('Transactions.date1');
-        $account->entries = $entries;
-        $this->set(compact('account'));
+        $bfDate = '2020-10-24';
+        $condition = ['Accounts.code LIKE'=>$account->code . '%'];
+        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
+        	$bfDate);
+		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
+			$bfDate);
+        $this->set(compact('account', 'bf', 'bfDate'));
 		//$this->viewBuilder()->setOption('serialize', ['account']);
     }
     
+    private function entriesInPeriod($condition, $bfDate) {
+    	return  $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
+        	where($condition)->order('Transactions.date1')->order('Transactions.date1');
+    }
+
+    private function aggregateBefore($condition, $bfDate) {
+        $query = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions']);
+        $query->where($condition);
+        $aggregate = 0;
+        foreach ($query->select([
+        		'Entries.account_id', 
+        		'total'=> $query->func()->sum('Entries.real_amount')])->
+        		group('Entries.account_id') as $row) {
+        	$aggregate += $row->total;
+		}
+		return $aggregate;
+    }
+
     /**
      * Add method
      *

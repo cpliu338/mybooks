@@ -1,0 +1,32 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Controller\Component;
+use Cake\I18n\Date;
+use Cake\I18n\FrozenDate;
+
+/**
+ * Transactions Controller
+ *
+ * @method \App\Model\Entity\Transaction[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ */
+class SessionComponent extends Component
+{
+	private defaultValues = [
+		'Transaction.bfDate' => FrozenDate::now()->subDays(100))
+	];
+	public function set(string $key) {
+		if (array_key_exists($key, $this->defaultValues)) {
+			$saved = $this->request->getSession()->write($key, $this->defaultValues[$key]);
+		}
+		else
+			return false;
+	}
+	public function get(string $key) {
+		if (array_key_exists($key, $this->defaultValues)) {
+			$saved = $this->request->getSession()->read($key, $this->defaultValues[$key]);
+		}
+		else
+			return false;
+	}
+}

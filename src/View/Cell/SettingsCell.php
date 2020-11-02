@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\View\Cell;
 
 use Cake\View\Cell;
-
+use Cake\I18n\FrozenDate;
 /**
  * Settings cell
  */
@@ -25,6 +25,7 @@ class SettingsCell extends Cell
      */
     public function initialize(): void
     {
+    	$this->loadComponent('Session');
     }
 
     /**
@@ -34,5 +35,12 @@ class SettingsCell extends Cell
      */
     public function display()
     {
+    	/*
+    	$saved = $this->request->getSession()->read('Transaction.bfDate');
+    	$this->set('bfDate', $saved ? 
+    		new FrozenDate($saved) :
+    		FrozenDate::now()->subDays(100));
+    		*/
+    	$this->set('bfDate', $this->Session->get('Transaction.bfDate'));
     }
 }

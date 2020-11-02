@@ -12,5 +12,5 @@
 				], ['class'=>'button']);
 	};
 ?>
-P &equiv; Q
+P &equiv; <?= $bfDate->i18nFormat('yyyy-MM-dd')?>
 </div>

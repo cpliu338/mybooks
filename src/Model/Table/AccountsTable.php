@@ -73,17 +73,6 @@ class AccountsTable extends Table
     			$frags = explode('-', $act->code);
     			return intval(array_pop($frags));
     		}, 0);
-    		/*
-    	$rootCode = substr($code1, 0, $lastIndex+1);
-    	$lastIndex = stripos($code1, '-');
-    	if (count($fragments === 1) return '';
-    	echo $rootCode . "\n";
-    	$act = $this->find()->where(['code LIKE'=>  $rootCode.'%'])->order('code DESC')->last();
-    	if (empty($act)) return '';
-    	echo $act->code . "\n";
-    	$subCode2 = substr($act->code, $lastIndex+1);
-    	return $rootCode . ($subCode2+1);
-    	*/
     	return $code1 . sprintf('-%02d',$x+1);
     }
 
