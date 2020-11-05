@@ -86,10 +86,14 @@ class TransactionsController extends AppController
 				'tran_date' => new Date(),
 				'entry1_dbcr' => $this->request->getQuery('db') ? -1 : 1,
 				'entry1_accountid' => $account1->id,
-				'entry1_accountcode' => $account1->code,
-				'account_options' => ['-1'=>$account1->db_label, '1'=>$account1->cr_label],
+				'entry1_accountid' => $account1->id,
+				'entry1_account' => $account1->code . ':' . $account1->name,
+				//'account_options' => ['-1'=>$account1->db_label, '1'=>$account1->cr_label],
 			]);
-			$entry1_options = ['1'=>'withdraw', '-1'=>'deposit'];
+			$entry1_options = [
+				'-1'=>$account1->db_label,
+				'1'=>$account1->cr_label
+				];
         	$this->set(compact('form', 'entry1_options', 'account1'));
         }
         else { 

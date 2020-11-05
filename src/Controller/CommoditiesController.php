@@ -37,6 +37,7 @@ class CommoditiesController extends AppController
         ]);
 
         $this->set(compact('commodity'));
+		$this->viewBuilder()->setOption('serialize', ['commodity']);
     }
 
     /**

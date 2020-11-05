@@ -42,6 +42,22 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+<script>
+$(function() {
+	$("#settings").dialog({
+		autoOpen: false,
+		title: 'Settings',
+	});
+	$("#link-settings").click(function (){
+		$.ajax({
+			url: "<?=$this->url->build(['controller'=>"Users",'action'=>"settings"])?>",
+		}).done(function (content) {
+			$("#settings").html(content);
+			$("#settings").dialog("open");
+		});
+	});
+});
+</script>
 </head>
 <body>
 <div style="position:fixed; top:250px; left:115px; opacity:0.5; z-index:99; color:red;">
@@ -50,7 +66,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 	 <span style="padding-left:50px"><?=$env?></span>
 </div>
 	<?= $this->element('menu') ?>
-            <?= $this->cell('Settings') ?>
+    <div id='settings'></div>
     <main class="main">
         <div class="container">
             <?= $this->Flash->render() ?>

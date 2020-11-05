@@ -44,6 +44,7 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Session');
         $this->loadComponent('Authentication.Authentication');
 
         /*
@@ -55,7 +56,8 @@ class AppController extends Controller
         	['href'=>['controller'=>'Accounts', 'action'=>'index'], 'innerHtml'=>__('My Books'), 'id'=>'accounts-link'],
         	['href'=>['controller'=>'Users', 'action'=>'index'], 'innerHtml'=>__('Users'), 'id'=>'users-link'],
         	['href'=>['controller'=>'Tags', 'action'=>'index'], 'innerHtml'=>__('Tags'), 'id'=>'tags-link'],
-        	['href'=>['controller'=>'Users', 'action'=>'logout'], 'innerHtml'=>__('Log out'), 'id'=>'logout-link']
+        	['href'=>['controller'=>'Users', 'action'=>'logout'], 'innerHtml'=>__('Log out'), 'id'=>'logout-link'],
+        	['href'=>'#', 'innerHtml'=>__('Settings'), 'id'=>'link-settings']
 		];
 		$env = Configure::read('env', '');
 		$this->set(compact('menuitems', 'env'));

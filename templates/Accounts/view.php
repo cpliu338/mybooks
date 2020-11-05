@@ -47,26 +47,79 @@
             	<?= $this->Element('account_book', ['account'=>$account,
             			'bf'=>$bf, 'summary'=>false])?>
             </div>
+            <button id="edit-commodity" class="btn-accent" style="position:fixed; bottom:40px; right:360px">
+            	Edit commodity
+            </button>
             <button id="transaction-db" class="transaction-dbcr" style="position:fixed; bottom:40px; right:40px">
             	<?= $account->db_label?>
             </button>
-            <button id="transaction-cr" class="transaction-dbcr" style="position:fixed; bottom:40px; right:200px" class="btn-accent">
+            <button id="transaction-cr" class="transaction-dbcr" style="position:fixed; bottom:40px; right:200px">
             	<?= $account->cr_label?>
             </button>
         </div> <!-- accounts view content -->
     </div> <!-- column-responsive column-100 -->
 </div> <!--row -->
+<div id="dlg-edit-commodity" >
+	<?= $this->Form->create($commodity, ['class'=>'abbrev-form']) ?>
+	<fieldset>
+		<?= $this->Form->control('home_amount', ['label'=>$account->currency])?>
+		<?= $this->Form->control('id', ['type'=>'select', 'options'=>$commodities]) ?>
+		<div>= <?=$currency?></div>
+		<?= $this->Form->control('real_amount', ['label'=>'= ' .$currency])?>
+	</fieldset>
+	<div id="conversion" data-alternate="abc">def</div>
+	<?= $this->Form->button(__('Remember'), ['id'=>'remember', 'type'=>'button']) ?>
+	<?= $this->Form->end() ?>
+</div>
 <div id="dlg-form-add" >
 </div>
 <script>
+$(function(){
+	setInterval(function(){
+		save = $("#conversion").text();
+		$("#conversion").text($("#conversion").data('alternate'));
+		$("#conversion").data('alternate', save);
+	}, 3000);
+});
+$("#home-amount").change(function(){
+	conversion();
+});
+$("#real-amount").change(function(){
+	conversion();
+});
+$("#id").change(function(){
+	$.ajax({
+		url: "<?=$this->url->build(['controller'=>"Commodities",'action'=>"view"])
+		?>" + "/" + $("#id").val(),
+		dataType: "json"
+	}).success(function (data) {
+		$("#real-amount").val(data.commodity.real_amount);
+		$("#home-amount").val(data.commodity.home_amount);
+		conversion();
+	});
+});
+function conversion() {
+	real_cur = "<?=$currency?>";
+	$( "#id option:selected" ).each(function() {
+		home_cur = $(this).text();
+	});
+	home_amount = $("#home-amount").val();
+	real_amount = $("#real-amount").val();
+	$("#conversion").text("1 " + home_cur + " = " + 
+		(real_amount/home_amount) + " " + real_cur);
+	$("#conversion").data('alternate', "1 " + real_cur + " = " + 
+		(home_amount/real_amount) + " " + home_cur);
+}
 function popup_dlg(content) {
-		$("#dlg-form-add").html(content);
-		addPlaceholder(["tran_desc",
-			"entry1_accountcode","entry1-realamount",
-			"entry2_accountcode"
-		]);
+	$("#dlg-form-add").html(content);
+	addPlaceholder(["tran_desc",
+		"entry1_account","entry1-realamount",
+	]);
 	$("#dlg-form-add").dialog("open");
 }
+$("#edit-commodity").click(function (){
+	$("#dlg-edit-commodity").dialog("open");
+});
 $("#transaction-db").click(function (){
 	$.ajax({
 		url: "<?=$this->url->build(['controller'=>"Transactions",'action'=>"add",
@@ -89,6 +142,10 @@ $("#dlg-form-add").dialog({
 	autoOpen: false,
 	title: 'Create Transaction',
 	//width: 600
+});
+$("#dlg-edit-commodity").dialog({
+	autoOpen: false,
+	title: 'Edit Commodity',
 });
 $("#accordion").accordion({
 	active: 2,

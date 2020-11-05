@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
+use Cake\Core\Configure;
 /**
  * Accounts Controller
  *
@@ -35,13 +35,17 @@ class AccountsController extends AppController
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);//debug($account->get('currency'));
-        $bfDate = '2020-08-01';
+        $bfDate = $this->Session->get('bfDate');
         $condition = ['Entries.account_id'=>$account->id];
         $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
         	$bfDate);
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate);
-        $this->set(compact('account', 'bf', 'bfDate'));
+		$this->loadModel('Commodities');
+		$commodity = $this->Commodities->find()->first();
+		$commodities = $this->Commodities->find('list');
+		$currency = Configure::read('Currency');
+        $this->set(compact('account', 'bf', 'bfDate', 'commodity', 'commodities', 'currency'));
 		$this->viewBuilder()->setOption('serialize', ['account']);
     }
     /**

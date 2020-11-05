@@ -414,4 +414,5 @@ return [
     'Session' => [
         'defaults' => 'php',
     ],
+    'Currency' => 'HKD',
 ];

@@ -1,11 +1,11 @@
-<?= $this->Form->create($form, ['id'=>'abbrev-form']) ?>
+<?= $this->Form->create($form, ['class'=>'abbrev-form']) ?>
 <fieldset>
 <?php
 	echo $this->Form->control('tran_date'),
 	$this->Form->control('tran_desc'),
 	$this->Form->control('entry1_accountid', ['type'=>'hidden']),
 	$this->Form->control('entry1_accountcode', ['type'=>'hidden']),
-	$this->Form->control('entry1_account', ['value'=>$account1->code . ':' . $account1->name]),
+	$this->Form->control('entry1_account', []),
 	$this->Form->control('entry1_dbcr', ['options'=>$entry1_options]),
 	$this->Form->control('entry1_realamount');
 ?>
@@ -30,7 +30,7 @@
     addSplit();
   } );
   function addSplit() {
-  	index = $("fieldset").length+1;
+  	index = $("#dlg-form-add fieldset").length+1;
   	clazz = index%2 ? '' : 'even-row';
 	fieldset = $(`<fieldset class="${clazz}"></fieldset>`);
 	acc = $("<input>");
@@ -53,7 +53,7 @@
 	realamt.attr('name', `entry${index}_realamount`);
 	realamt.attr('placeholder', `entry${index} realamount`);
 	fieldset.append(realamt);
-	$("fieldset").last().after(fieldset);
+	$("#dlg-form-add fieldset").last().after(fieldset);
     $( "#"+id).autocomplete({
       source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",
       minLength: 1,
@@ -62,7 +62,10 @@
       	  getAccount(ui.item.id, index);
       }
     });
-    $("#"+`entry${index}-realamount`).blur(function() {
+    $("#"+`entry${index}-realamount`).change(function() {
+		$("#confirm").attr('disabled', !confirmable());
+    });
+    $("select").change(function() {
 		$("#confirm").attr('disabled', !confirmable());
     });
   }

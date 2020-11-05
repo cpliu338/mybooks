@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+use App\Form\SettingsForm;
 
 /**
  * Users Controller
@@ -47,6 +48,24 @@ class UsersController extends AppController
 		if ($result->isValid()) {
 			$this->Authentication->logout();
 			return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+		}
+	}
+	
+	public function settings() {
+		if ($this->request->is('get')) {
+			$this->log('get', 'info');
+        	$form = new SettingsForm();
+        	$form->set([
+				'bfDate' => $this->Session->get('bfDate'),
+				]);
+			$this->set(compact('form'));
+		}
+		else {
+            $data = $this->request->getData();
+			$result = "Updated";
+			$result = $this->Session->set('bfDate', $data['bfDate']);;
+			$this->set(compact('result'));
+			$this->viewBuilder()->setOption('serialize', ['result']);
 		}
 	}
 	
