@@ -18,7 +18,7 @@
                     <th><?= $this->Paginator->sort('real_amount') ?></th>
                     <th><?= $this->Paginator->sort('home_amount') ?></th>
                     <th><?= $this->Paginator->sort('date2') ?></th>
-                    <th><?= $this->Paginator->sort('tags') ?></th>
+                    <th><?= $this->Paginator->sort('labels') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
@@ -32,7 +32,7 @@
                     <td><?= $this->Number->format($entry->real_amount) ?></td>
                     <td><?= $this->Number->format($entry->home_amount) ?></td>
                     <td><?= h($entry->date2) ?></td>
-                    <td>h($entry->tags)</td>
+                    <td>h($entry->labels)</td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $entry->id]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $entry->id]) ?>

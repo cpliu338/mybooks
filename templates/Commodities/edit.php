@@ -24,7 +24,7 @@
                 <?php
                     echo $this->Form->control('name');
                     echo $this->Form->control('remark');
-                    echo $this->Form->control('tags');
+                    echo $this->Form->control('labels');
                     echo $this->Form->control('home_amount');
                     echo $this->Form->control('real_amount');
                 ?>

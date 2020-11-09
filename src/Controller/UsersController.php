@@ -34,6 +34,11 @@ class UsersController extends AppController
 			]);
 		/*$this->log(var_export($redirect, true), 'info');
 		$redirect is a string, if /cpbooks/accounts => BAD */
+//$redirect='/cpbooks/accounts';
+$base = $this->request->getAttribute('base');
+if (!empty($base) && strpos($redirect, $base)===0)
+return $this->redirect(substr($redirect, strlen($base)));
+else
 			return $this->redirect($redirect);
 		}
 		// display error if user submitted and authentication failed

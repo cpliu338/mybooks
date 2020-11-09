@@ -74,7 +74,7 @@
   }
 } 
 
-.abbrev-form label {
+.abbrev-form label.hide {
 	display: none;
 }
 

@@ -84,7 +84,7 @@ class EntriesTable extends Table
             ->allowEmptyDate('date2');
 
         $validator
-            ->allowEmptyString('tags');
+            ->allowEmptyString('labels');
 
         return $validator;
     }

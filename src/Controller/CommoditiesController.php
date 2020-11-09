@@ -32,10 +32,14 @@ class CommoditiesController extends AppController
      */
     public function view($id = null)
     {
-        $commodity = $this->Commodities->get($id, [
+    	if ($id != null) 
+	        $commodity = $this->Commodities->get($id, [
             'contain' => [],
-        ]);
-
+            ]);
+		else
+			$commodity = $this->Commodities->findByName($this->request->getQuery('name'))->first();
+		if (!$commodity)
+			$commodity = $this->Commodities->newEmptyEntity();
         $this->set(compact('commodity'));
 		$this->viewBuilder()->setOption('serialize', ['commodity']);
     }

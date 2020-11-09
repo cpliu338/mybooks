@@ -19,7 +19,6 @@ class AccountsController extends AppController
     public function index()
     {
         $accounts = $this->paginate($this->Accounts);
-
         $this->set(compact('accounts'));
     }
 

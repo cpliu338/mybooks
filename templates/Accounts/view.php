@@ -113,9 +113,13 @@ function conversion() {
 function popup_dlg(content) {
 	$("#dlg-form-add").html(content);
 	addPlaceholder(["tran_desc",
-		"entry1_account","entry1-realamount",
+		"entry1_account", "entry1_homeamount"
 	]);
 	$("#dlg-form-add").dialog("open");
+	$("form").find("label").each(function(index) {
+		if (! $(this).attr("for").endsWith('homeamount') )
+			$(this).addClass("hide");
+	});
 }
 $("#edit-commodity").click(function (){
 	$("#dlg-edit-commodity").dialog("open");
@@ -124,7 +128,7 @@ $("#transaction-db").click(function (){
 	$.ajax({
 		url: "<?=$this->url->build(['controller'=>"Transactions",'action'=>"add",
 				'?'=>['account_id'=>$account->id,
-					'db' => '1']])?>",
+					'db' => '1']], ['escape'=>false])?>",
 	}).done(function (content) {
 		popup_dlg(content);
 	});
@@ -159,18 +163,22 @@ function addPlaceholder(labels) {
 	});
 }
 function confirmable() {
-	if ($("#entry1-realamount").val()<0.005) return false;
+	if ($("#entry1-homeamount").val()<0.005) return false;
 	sum = 0.0;
 	for (i=1; i<=$("fieldset").length; i++) {
 		if (Math.abs($(`#entry${i}-dbcr`).val()) !== 1) /* 1 or -1*/
 			return false;
+		/*
 		else 
 				console.log(i + " " + $(`#entry${i}-dbcr`).val());
+				*/
 		if ($(`#entry${i}-accountid`).val() == false) /* 0 or empty */
 			return false;
+		/*
 		else 
 				console.log(i + " " + $(`#entry${i}-accountid`).val());
-		sum = sum + $(`#entry${i}-realamount`).val()
+				*/
+		sum = sum + $(`#entry${i}-homeamount`).val()
 		*$(`#entry${i}-dbcr`).val();
 	}
 	return Math.abs(sum) < 0.005;

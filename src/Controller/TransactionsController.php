@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 use Cake\I18n\Date;
+use Cake\Core\Configure;
 use App\Form\TransactionForm;
 
 /**
@@ -94,7 +95,8 @@ class TransactionsController extends AppController
 				'-1'=>$account1->db_label,
 				'1'=>$account1->cr_label
 				];
-        	$this->set(compact('form', 'entry1_options', 'account1'));
+			$homeCurrency = Configure::read('HomeCurrency');
+        	$this->set(compact('form', 'entry1_options', 'account1', 'homeCurrency'));
         }
         else { 
         	$this->loadModel('Accounts');

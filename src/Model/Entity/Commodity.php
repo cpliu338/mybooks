@@ -29,7 +29,7 @@ class Commodity extends Entity
     protected $_accessible = [
         'name' => true,
         'remark' => true,
-        'tags' => true,
+        'labels' => true,
         'home_amount' => true,
         'real_amount' => true,
     ];

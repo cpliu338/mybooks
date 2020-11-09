@@ -27,8 +27,8 @@
                     <td><?= h($commodity->remark) ?></td>
                 </tr>
                 <tr>
-                    <th><?= __('Tags') ?></th>
-                    <td><?= h($commodity->tags) ?></td>
+                    <th><?= __('Labels') ?></th>
+                    <td><?= h($commodity->labels) ?></td>
                 </tr>
                 <tr>
                     <th><?= __('Id') ?></th>

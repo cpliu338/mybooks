@@ -66,9 +66,9 @@ class CommoditiesTable extends Table
             ->allowEmptyString('remark');
 
         $validator
-            ->scalar('tags')
-            ->maxLength('tags', 255)
-            ->allowEmptyString('tags');
+            ->scalar('labels')
+            ->maxLength('labels', 255)
+            ->allowEmptyString('labels');
 
         $validator
             ->decimal('home_amount')

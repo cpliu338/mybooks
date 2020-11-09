@@ -38,7 +38,7 @@ class Entry extends Entity
         'real_amount' => true,
         'home_amount' => true,
         'date2' => true,
-        'tags' => true,
+        'labels' => true,
         'account' => true,
         'transaction' => true,
     ];

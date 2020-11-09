@@ -5,15 +5,47 @@
 	$this->Form->control('tran_desc'),
 	$this->Form->control('entry1_accountid', ['type'=>'hidden']),
 	$this->Form->control('entry1_accountcode', ['type'=>'hidden']),
-	$this->Form->control('entry1_account', []),
+	$this->Form->control('entry1_account', ['disabled'=>true]),
 	$this->Form->control('entry1_dbcr', ['options'=>$entry1_options]),
-	$this->Form->control('entry1_realamount');
+	$this->Form->control('entry1_homeamount', [
+			'class'=>'amount',
+			'label'=>$account1->currency]),
+	$this->Form->control('entry1_realamount', ['type'=>'hidden']);
 ?>
+<?php if ($account1->currency != $homeCurrency): ?>
+	<div id="entry1-msg"></div>
+<script>
+	$("#entry1-homeamount").change(function(){
+		calcConversion(1, "<?=$account1->currency?>");
+	});
+</script>
+<?php endif; ?>
 </fieldset>
 <button class="btn-accent" id="add-split">Add split</button>
 <?= $this->Form->button(__('Confirm'), ['id'=>'confirm', 'disabled'=>true]) ?>
 <?= $this->Form->end() ?>
 <script>
+	homeCurrency = "<?=$homeCurrency?>";
+	function calcConversion(index, currency) {
+		msgid = `#entry${index}-msg`;
+		homeamtid = `#entry${index}-homeamount`;
+		realamtid = `#entry${index}-realamount`;
+		if (homeCurrency == currency) {
+			$(msgid).text("");
+			$(realamtid).val($(homeamtid).val());
+		}
+		else {
+			$.ajax({
+				url: "<?=$this->url->build(['controller'=>"Commodities",'action'=>"view",
+				])?>" + `?name=${encodeURIComponent(currency)}`,
+				dataType: "json"
+			}).success(function (data){
+				realamt = (parseFloat($(homeamtid).val()) * data.commodity.real_amount / data.commodity.home_amount).toFixed(2);
+				$(msgid).text(`equals ${realamt} ${homeCurrency}`);
+				$(realamtid).val(realamt);
+			});
+		}
+	}
   function getAccount(id, index) {
   	  $.ajax({
 		  url: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"view"])?>"
@@ -24,6 +56,8 @@
   	  	  $(selectId).html('');
   	  	  $(selectId).append(new Option(data.account.db_label, -1));
   	  	  $(selectId).append(new Option(data.account.cr_label, 1));
+      	  amountid = `entry${index}-homeamount`;
+      	  $("label[for="+amountid+"]").text(data.account.currency);
   	  });
   }
   $( function() {
@@ -48,11 +82,23 @@
 	select.attr('id', `entry${index}-dbcr`);
 	select.attr('name', `entry${index}_dbcr`);
 	fieldset.append(select);
-	realamt = $("<input type='number'>");
-	realamt.attr('id', `entry${index}-realamount`);
-	realamt.attr('name', `entry${index}_realamount`);
-	realamt.attr('placeholder', `entry${index} realamount`);
+	homeamt_id = `entry${index}-homeamount`;
+	label = $("<label for='"+homeamt_id+"'></label>");
+	label.text("Currency");
+	fieldset.append(label);
+	homeamt = $("<input type='number'>");
+	homeamt.attr('id', homeamt_id);
+	homeamt.attr('name', `entry${index}_homeamount`);
+	homeamt.attr('class', 'amount');
+	homeamt.attr('placeholder', `entry${index} homeamount`);
+	fieldset.append(homeamt);
+	realamt_id = `entry${index}-realamount`;
+	realamt = $("<input type='hidden'>");
+	realamt.attr('id', realamt_id);
 	fieldset.append(realamt);
+	div = $("<div></div>");
+	div.attr('id', `entry${index}-msg`);
+	fieldset.append(div);
 	$("#dlg-form-add fieldset").last().after(fieldset);
     $( "#"+id).autocomplete({
       source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",
@@ -62,8 +108,9 @@
       	  getAccount(ui.item.id, index);
       }
     });
-    $("#"+`entry${index}-realamount`).change(function() {
+    $("#"+`entry${index}-homeamount`).change(function() {
 		$("#confirm").attr('disabled', !confirmable());
+		calcConversion(index, $("label[for="+`entry${index}-homeamount`+"]").text()); 
     });
     $("select").change(function() {
 		$("#confirm").attr('disabled', !confirmable());

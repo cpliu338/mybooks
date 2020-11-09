@@ -23,7 +23,7 @@
                     echo $this->Form->control('real_amount');
                     echo $this->Form->control('home_amount');
                     echo $this->Form->control('date2', ['empty' => true]);
-                    echo $this->Form->control('tags');
+                    echo $this->Form->control('labels');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

@@ -14,7 +14,7 @@
                     <th><?= $this->Paginator->sort('id') ?></th>
                     <th><?= $this->Paginator->sort('name') ?></th>
                     <th><?= $this->Paginator->sort('remark') ?></th>
-                    <th><?= $this->Paginator->sort('tags') ?></th>
+                    <th><?= $this->Paginator->sort('labels') ?></th>
                     <th><?= $this->Paginator->sort('home_amount') ?></th>
                     <th><?= $this->Paginator->sort('real_amount') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
@@ -26,7 +26,7 @@
                     <td><?= $this->Number->format($commodity->id) ?></td>
                     <td><?= h($commodity->name) ?></td>
                     <td><?= h($commodity->remark) ?></td>
-                    <td><?= h($commodity->tags) ?></td>
+                    <td><?= h($commodity->labels) ?></td>
                     <td><?= $this->Number->format($commodity->home_amount) ?></td>
                     <td><?= $this->Number->format($commodity->real_amount) ?></td>
                     <td class="actions">
