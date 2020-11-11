@@ -14,11 +14,11 @@
 ?>
 <?php if ($account1->currency != $homeCurrency): ?>
 	<div id="entry1-msg"></div>
-<script>
+<!-- script>
 	$("#entry1-homeamount").change(function(){
 		calcConversion(1, "<?=$account1->currency?>");
 	});
-</script>
+</script -->
 <?php endif; ?>
 </fieldset>
 <button class="btn-accent" id="add-split">Add split</button>
@@ -43,6 +43,7 @@
 				realamt = (parseFloat($(homeamtid).val()) * data.commodity.real_amount / data.commodity.home_amount).toFixed(2);
 				$(msgid).text(`equals ${realamt} ${homeCurrency}`);
 				$(realamtid).val(realamt);
+				$("#confirm").attr('disabled', !confirmable());
 			});
 		}
 	}
@@ -62,6 +63,10 @@
   }
   $( function() {
     addSplit();
+    $("#entry1-homeamount").change(function() {
+		calcConversion(1, $("label[for=entry1-homeamount]").text()); 
+		$("#confirm").attr('disabled', !confirmable());
+    });
   } );
   function addSplit() {
   	index = $("#dlg-form-add fieldset").length+1;
@@ -95,6 +100,7 @@
 	realamt_id = `entry${index}-realamount`;
 	realamt = $("<input type='hidden'>");
 	realamt.attr('id', realamt_id);
+	realamt.attr('name', `entry${index}_realamount`);
 	fieldset.append(realamt);
 	div = $("<div></div>");
 	div.attr('id', `entry${index}-msg`);
@@ -109,8 +115,10 @@
       }
     });
     $("#"+`entry${index}-homeamount`).change(function() {
-		$("#confirm").attr('disabled', !confirmable());
 		calcConversion(index, $("label[for="+`entry${index}-homeamount`+"]").text()); 
+		/* this is done in the success closure
+		$("#confirm").attr('disabled', !confirmable());
+		*/
     });
     $("select").change(function() {
 		$("#confirm").attr('disabled', !confirmable());

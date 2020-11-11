@@ -145,7 +145,6 @@ $("#transaction-cr").click(function (){
 $("#dlg-form-add").dialog({
 	autoOpen: false,
 	title: 'Create Transaction',
-	//width: 600
 });
 $("#dlg-edit-commodity").dialog({
 	autoOpen: false,
@@ -165,22 +164,18 @@ function addPlaceholder(labels) {
 function confirmable() {
 	if ($("#entry1-homeamount").val()<0.005) return false;
 	sum = 0.0;
-	for (i=1; i<=$("fieldset").length; i++) {
+	for (i=1; i<$("fieldset").length; i++) {
 		if (Math.abs($(`#entry${i}-dbcr`).val()) !== 1) /* 1 or -1*/
 			return false;
-		/*
-		else 
-				console.log(i + " " + $(`#entry${i}-dbcr`).val());
-				*/
 		if ($(`#entry${i}-accountid`).val() == false) /* 0 or empty */
 			return false;
-		/*
-		else 
-				console.log(i + " " + $(`#entry${i}-accountid`).val());
-				*/
-		sum = sum + $(`#entry${i}-homeamount`).val()
-		*$(`#entry${i}-dbcr`).val();
-	}
+		sum = sum + $(`#entry${i}-realamount`).val()
+			* $(`#entry${i}-dbcr`).val();
+	}/*
+	if (Math.abs(sum) > 0.005) {
+		length = $("fieldset").length;
+		console.log(`Fieldsets: ${length} sum: ${sum}`);
+	} */
 	return Math.abs(sum) < 0.005;
 }
 </script>
