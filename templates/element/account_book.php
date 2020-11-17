@@ -34,7 +34,8 @@
 	<?php if ($summary): ?>
 			<td><?= h($entries->account->name) ?></td>
 	<?php endif; ?>
-			<td><?= h($entries->transaction->description) ?>
+			<td><?= $this->Html->link(h($entries->transaction->description),
+				['controller'=>'Transactions', 'action'=>'edit', $entries->transaction_id])?>
 			( <?= h($entries->status) ?> )</td>
 	<?php if ($entries->get($amount)<0): ?>
 			<td class="db"><?= 0-$entries->get($amount) ?></td><td class="cr"></td>

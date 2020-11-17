@@ -11,8 +11,7 @@ class TransactionForm extends Form {
 
 	protected function _buildSchema(Schema $schema): Schema {
 		return $schema->addField('tran_date', 'date')
-			->addField('tran_desc', 'string')
-			->addField('tran_id', 'integer')
+			->addField('tran_desc', 'string')/*
 			->addField('entry1_id', 'integer')
 			->addField('entry1_accountcode', 'string')
 			->addField('entry1_dbcr', [
@@ -32,7 +31,7 @@ class TransactionForm extends Form {
 			->addField('entry2_realamount', [
 					'type'=>'decimal', 'precision'=>2])
 			->addField('entry2_homeamount', [
-					'type'=>'decimal', 'precision'=>2]);
+					'type'=>'decimal', 'precision'=>2])*/;
 	}
 	
 	/**
