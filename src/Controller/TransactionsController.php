@@ -162,6 +162,10 @@ class TransactionsController extends AppController
         		$this->request->getQuery('account_id', '1')
 			)*/
 		);
+		$this->loadModel('Commodities');
+		$commodity = $this->Commodities->find()->first();
+		$commodities = $this->Commodities->find('list');
+        $this->set(compact('commodity', 'commodities'));
     }
     
     private function add_edit_get($transaction, $account1_id) {
@@ -182,22 +186,6 @@ class TransactionsController extends AppController
 				'tran_desc' => $transaction->description,
 				'entry1_accountid' => $account1->id,
 			]);
-			/*
-			if ($entry->realamount > 0) {
-				$form->set([
-					'entry1_dbcr' => 1,
-					'entry1_realamount' => $entry->real_amount,
-					'entry1_homeamount' => $entry->home_amount,
-				]);
-			}
-			else {
-				$form->set([
-					'entry1_dbcr' => -1,
-					'entry1_realamount' => 0-$entry->real_amount,
-					'entry1_homeamount' => 0-$entry->home_amount,
-				]);
-			}
-			*/
 		}
 		$form->set([
 			'entry1_account' => $account1->code . ':' . $account1->name,
@@ -206,7 +194,7 @@ class TransactionsController extends AppController
 				'-1'=>$account1->db_label,
 				'1'=>$account1->cr_label
 				];
-		$homeCurrency = Configure::read('HomeCurrency');
+		$homeCurrency = Configure::read('Currency');
 		$this->set(compact('form', 'entry1_options', 'homeCurrency'));
     }
 

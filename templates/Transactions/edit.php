@@ -7,8 +7,23 @@
 ?>
 </fieldset>
 <button class="btn-accent" id="add-split">Add split</button>
+<button id="edit-commodity" class="btn-accent">
+	Edit commodity
+</button>
 <?= $this->Form->button(__('Confirm'), ['id'=>'confirm', 'disabled'=>true]) ?>
 <?= $this->Form->end() ?>
+<div id="dlg-edit-commodity" >
+	<?= $this->Form->create($commodity, ['class'=>'abbrev-form']) ?>
+	<fieldset>
+		<?= $this->Form->control('home_amount', ['label'=>'HKD'])?>
+		<?= $this->Form->control('id', ['type'=>'select', 'options'=>$commodities, 'label'=>'Currency']) ?>
+		<div>= <?=$homeCurrency?></div>
+		<?= $this->Form->control('real_amount', ['label'=>'= ' .$homeCurrency])?>
+	</fieldset>
+	<div id="conversion" data-alternate="abc">def</div>
+	<?= $this->Form->button(__('Remember'), ['id'=>'remember', 'type'=>'button']) ?>
+	<?= $this->Form->end() ?>
+</div>
 <script>
 	homeCurrency = "<?=$homeCurrency?>";
 	function calcConversion(index, currency) {
@@ -19,6 +34,7 @@
 		if (homeCurrency == currency) {
 			$(msgid).text("");
 			$(realamtid).val($(homeamtid).val());
+			$("#confirm").attr('disabled', !confirmable());
 		}
 		else {
 			$.ajax({
@@ -51,7 +67,20 @@
   	  	  $("#confirm").attr('disabled', !confirmable());    
   	  });
   }
+	$("#edit-commodity").click(function (ev){
+		ev.preventDefault();
+		$("#dlg-edit-commodity").dialog("open");
+	});
+	$("#dlg-edit-commodity").dialog({
+		autoOpen: false,
+		title: 'Edit Commodity',
+	});
   $( function() {
+	setInterval(function(){
+		save = $("#conversion").text();
+		$("#conversion").text($("#conversion").data('alternate'));
+		$("#conversion").data('alternate', save);
+	}, 3000);
 <?php for ($index=0; $index<count($transaction->entries); $index++): ?>
     addOldSplit(<?=$index+1?>, <?=$transaction->entries[$index]->id?>,
     	"<?=$transaction->entries[$index]->account->code . ':' . $transaction->entries[$index]->account->name?>",
@@ -129,8 +158,8 @@
     $("#"+`entry${index}-homeamount`).change(function() {
 		calcConversion(index, $("label[for="+`entry${index}-homeamount`+"]").text()); 
 		/* this is done in the success closure
-		$("#confirm").attr('disabled', !confirmable());
 		*/
+		$("#confirm").attr('disabled', !confirmable());
     });
     $("select").change(function() {
 		$("#confirm").attr('disabled', !confirmable());
@@ -150,20 +179,49 @@ function addPlaceholder(labels) {
 		$("#"+id).attr('placeholder', $("label[for="+id+"]").text());
 	});
 }
+$("#home-amount").change(function(){
+	conversion();
+});
+$("#real-amount").change(function(){
+	conversion();
+});
+$("#id").change(function(){
+	$.ajax({
+		url: "<?=$this->url->build(['controller'=>"Commodities",'action'=>"view"])
+		?>" + "/" + $("#id").val(),
+		dataType: "json"
+	}).success(function (data) {
+		$("#real-amount").val(data.commodity.real_amount);
+		$("#home-amount").val(data.commodity.home_amount);
+		conversion();
+	});
+});
+function conversion() {
+	real_cur = "<?=$homeCurrency?>";
+	$( "#id option:selected" ).each(function() {
+		home_cur = $(this).text();
+	});
+	home_amount = $("#home-amount").val();
+	real_amount = $("#real-amount").val();
+	$("#conversion").text("1 " + home_cur + " = " + 
+		(real_amount/home_amount) + " " + real_cur);
+	$("#conversion").data('alternate', "1 " + real_cur + " = " + 
+		(home_amount/real_amount) + " " + home_cur);
+}
 function confirmable() {
 	if ($("#entry1-homeamount").val()<0.005) return false;
 	sum = 0.0;
 	for (i=1; i<$("fieldset").length; i++) {
 		if (Math.abs($(`#entry${i}-dbcr`).val()) !== 1) /* 1 or -1*/
-			return false;
+			break;
 		if ($(`#entry${i}-accountid`).val() == false) /* 0 or empty */
 			return false;
 		sum = sum + $(`#entry${i}-realamount`).val()
 			* $(`#entry${i}-dbcr`).val();
-	}/*
+	} /* 
 	if (Math.abs(sum) > 0.005) {
+		console.log(`Fieldsets: ${length} sum: ${sum}`); 
 		length = $("fieldset").length;
-		console.log(`Fieldsets: ${length} sum: ${sum}`);
 	} */
 	return Math.abs(sum) < 0.005;
 }
