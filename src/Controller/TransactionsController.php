@@ -133,12 +133,19 @@ class TransactionsController extends AppController
                 $index = 1;
                 $message = 'Entry id ';
                 while (array_key_exists("entry${index}_id", $data)) {
-                	$entry = $this->Transactions->Entries->get($data["entry${index}_id"]);
+                	if ($data["entry${index}_id"]) {
+                		$entry = $this->Transactions->Entries->get($data["entry${index}_id"]);
+                	}
+                	else {
+                		$entry = $this->Transactions->Entries->newEmptyEntity();
+                		$entry->transaction_id = $id;
+                	}
                 	$entry->real_amount = $data["entry${index}_realamount"] * $data["entry${index}_dbcr"];
                 	$entry->home_amount = $data["entry${index}_homeamount"] * $data["entry${index}_dbcr"];
                 	$entry->account_id = $data["entry${index}_accountid"];
                 	if ($this->Transactions->Entries->save($entry)) {
-                		$message = $message . ' ' .  $data["entry${index}_id"];
+                		$en_id = $entry->id;
+                		$message = $message . ' ' .  $en_id;
                 	}
                 	else {
                 		$index = -1;

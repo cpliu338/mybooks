@@ -1,4 +1,4 @@
-<?= $this->Form->create($form, ['class'=>'abbrev-form', 'id'=>'form-add']) ?>
+<?= $this->Form->create($form, ['id'=>'main-form']) ?>
 <fieldset>
 <?php
 	echo 
@@ -82,7 +82,7 @@
 		$("#conversion").data('alternate', save);
 	}, 3000);
 <?php for ($index=0; $index<count($transaction->entries); $index++): ?>
-    addOldSplit(<?=$index+1?>, <?=$transaction->entries[$index]->id?>,
+    addSplit(<?=$index+1?>, <?=$transaction->entries[$index]->id?>,
     	"<?=$transaction->entries[$index]->account->code . ':' . $transaction->entries[$index]->account->name?>",
     	<?=$transaction->entries[$index]->account->id?>,
     	<?=$transaction->entries[$index]->home_amount?>,
@@ -98,9 +98,7 @@
     });
     */
   } );
-  function addSplit(index) {
-  }
-  function addOldSplit(index, entryid_val, account_val,
+  function addSplit(index, entryid_val, account_val,
   	  accountid_val, homeamount_val, realamount_val,
   	  currency_val, homecurrency_val) {
   	clazz = index%2 ? '' : 'even-row';
@@ -146,7 +144,7 @@
 	div.attr('id', `entry${index}-msg`);
 	div.text(`Equals ${homecurrency_val} ${Math.abs(realamount_val)}`);
 	fieldset.append(div);
-	$("#form-add fieldset").last().after(fieldset);
+	$("#main-form fieldset").last().after(fieldset);
     $( "#"+id).autocomplete({
       source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",
       minLength: 1,
@@ -171,7 +169,9 @@
   }
   $("#add-split").click(function (ev){
   	ev.preventDefault();
-  	addSplit();
+  	addSplit($("#main-form select").length+1, '', '',
+  	  1, '', '',
+  	  '', '');
   });
 function addPlaceholder(labels) {
 	labels.forEach(function (label, index) {
