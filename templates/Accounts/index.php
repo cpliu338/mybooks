@@ -4,6 +4,16 @@
  * @var \App\Model\Entity\Account[]|\Cake\Collection\CollectionInterface $accounts
  */
 ?>
+<div>
+<ul id="toggleable">
+<li data-id="0">Any</li>
+<?php foreach ($tags as $id=>$name): ?>
+<li data-id="<?= $id?>"> <?= $name?></li>
+<?php endforeach; ?>
+</ul>
+<button id="reload">Reload</button>
+<span id="result"></span>
+</div>
 <div class="accounts index content">
     <?= $this->Html->link(__('New Account'), ['action' => 'add'], ['class' => 'button float-right']) ?>
     <h3><?= __('Accounts') ?></h3>
@@ -51,3 +61,40 @@
         <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>
+<script>
+var selected = [<?php echo join($tagfilter, ',')?>];
+$(function () {
+	$("#toggleable li").each(function (index){
+		if (selected.includes($(this).data('id'))) 
+			$(this).addClass("ui-selected");
+	});
+	$("#reload").click(function() {
+			/*alert($('meta[name="csrfToken"]').attr('content'));
+			*/
+		$.ajax({
+			url: "<?=$this->url->build(['action'=>"setFilter"])?>",
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			data: JSON.stringify(selected),
+			headers: {/*Accept: "application/json",*/
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content')},
+		  	method: 'post'
+		}).success(function (content) {
+			location.reload();
+		}).error(function (jqXHR, textStatus, errorThrown) {
+			$("#result").html(JSON.stringify(errorThrown));
+		});
+	});
+	$("#toggleable li").click(function() {
+		found = false;
+		for (var i = 0; i<selected.length && !found; i++) {
+			if (selected[i] === $(this).data('id')) {
+				selected.splice(i, 1);
+				found = true;
+			}
+		}
+		if (!found) selected.push($(this).data('id'));
+		$(this).toggleClass("ui-selected");
+	});
+});
+</script>

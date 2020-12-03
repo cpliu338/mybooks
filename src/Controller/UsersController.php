@@ -62,15 +62,17 @@ else
         	$form = new SettingsForm();
         	$form->set([
 				'bfDate' => $this->Session->get('bfDate'),
+				'redirect' => $this->request->getQuery('redirect', '/')
 				]);
 			$this->set(compact('form'));
 		}
 		else {
             $data = $this->request->getData();
 			$result = "Updated";
-			$result = $this->Session->set('bfDate', $data['bfDate']);;
+			$result = $this->Session->set('bfDate', $data['bfDate']);/*
 			$this->set(compact('result'));
-			$this->viewBuilder()->setOption('serialize', ['result']);
+			$this->viewBuilder()->setOption('serialize', ['result']);*/
+			return $this->redirect($this->request->getQuery('redirect'));
 		}
 	}
 	

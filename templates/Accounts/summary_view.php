@@ -11,7 +11,7 @@ use Cake\Core\Configure;
         <div class="accounts view content">
 			<h3><?php printf("%s summary (%s)", 
                 h($account->name),  Configure::read('HomeCurrency'));
-                ?></h3><?= $bf ?>
+                ?></h3>
             <div class="related">
             	<?= $this->Element('account_book', ['account'=>$account, 
             			'bf'=>$bf, 'summary'=>true])?>

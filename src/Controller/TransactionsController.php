@@ -82,10 +82,11 @@ class TransactionsController extends AppController
             return $this->redirect(['action' => 'index']);
         }
         else if ($this->request->is('get')) {
-        	$form = new TransactionForm();
         	$account1 = $this->Accounts->get(
         		$this->request->getQuery('account_id', '1')
 			);
+        	/*
+        	$form = new TransactionForm();
         	$form->set([
 				'tran_date' => new Date(),
 				'entry1_dbcr' => $this->request->getQuery('db') ? -1 : 1,
@@ -100,14 +101,17 @@ class TransactionsController extends AppController
 				];
 			$homeCurrency = Configure::read('HomeCurrency');
         	$this->set(compact('form', 'entry1_options', 'account1', 'homeCurrency'));
-        }
+        */
+        	//$this->set(compact('transaction'));
+			$this->add_edit_get($transaction, $account1->id);
+        } /*
         else { 
         	$this->loadModel('Accounts');
         	$accounts = $this->Accounts->find('list', ['limit' => 200]);
         	$entry1 = $this->Transactions->Entries->newEntity(['account_id'=>1]);
         	$entry2 = $this->Transactions->Entries->newEmptyEntity();
-        }
-        $this->set(compact('transaction'));
+        } */
+        $this->set(compact('transaction', 'account1'));
     }
 
     /**
@@ -169,10 +173,6 @@ class TransactionsController extends AppController
         		$this->request->getQuery('account_id', '1')
 			)*/
 		);
-		$this->loadModel('Commodities');
-		$commodity = $this->Commodities->find()->first();
-		$commodities = $this->Commodities->find('list');
-        $this->set(compact('commodity', 'commodities'));
     }
     
     private function add_edit_get($transaction, $account1_id) {
@@ -203,6 +203,10 @@ class TransactionsController extends AppController
 				];
 		$homeCurrency = Configure::read('Currency');
 		$this->set(compact('form', 'entry1_options', 'homeCurrency'));
+		$this->loadModel('Commodities');
+		$commodity = $this->Commodities->find()->first();
+		$commodities = $this->Commodities->find('list');
+        $this->set(compact('commodity', 'commodities'));
     }
 
     /**

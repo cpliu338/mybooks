@@ -173,12 +173,14 @@
   	  1, '', '',
   	  '', '');
   });
+  /*
 function addPlaceholder(labels) {
 	labels.forEach(function (label, index) {
 		id = label.replace("_", "-");
 		$("#"+id).attr('placeholder', $("label[for="+id+"]").text());
 	});
 }
+*/
 $("#home-amount").change(function(){
 	conversion();
 });

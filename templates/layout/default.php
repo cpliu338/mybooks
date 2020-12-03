@@ -21,6 +21,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?= $this->Html->meta('csrfToken', $this->request->getAttribute('csrfToken'))?>
     <title>
         <?= __('My books') ?>:
         <?= $this->fetch('title') ?>
@@ -50,7 +51,8 @@ $(function() {
 	});
 	$("#link-settings").click(function (){
 		$.ajax({
-			url: "<?=$this->url->build(['controller'=>"Users",'action'=>"settings"])?>",
+			url: "<?=$this->url->build(['controller'=>"Users",'action'=>"settings"
+			])?>" + '?redirect=' + encodeURIComponent(window.location.href),
 		}).done(function (content) {
 			$("#settings").html(content);
 			$("#settings").dialog("open");

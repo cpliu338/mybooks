@@ -18,8 +18,28 @@ class AccountsController extends AppController
      */
     public function index()
     {
-        $accounts = $this->paginate($this->Accounts);
-        $this->set(compact('accounts'));
+    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
+    	if (count($tagfilter) == 0) $tagfilter = [0];
+    	$query = $this->Accounts->find()->distinct('Accounts.id');
+        $accounts = (in_array(0, $tagfilter)) ?
+        	$this->paginate($query) :
+        	$this->paginate($query->matching('Tags', function ($q) use ($tagfilter) {
+        		return $q->where([
+					'Tags.id IN' => $tagfilter
+					]);
+			})
+		);
+        $tags = $this->Accounts->Tags->find('list');
+        $this->set(compact('accounts', 'tags', 'tagfilter'));
+    }
+
+    public function setFilter() {
+    	$tagFilter = $this->request->input('json_decode');
+    	if (in_array(0, $tagFilter))
+    		$tagFilter = [0];
+    	$this->Session->set('tagFilter', implode(",", $tagFilter));
+    	$this->set(compact('tagFilter'));
+		$this->viewBuilder()->setOption('serialize', ['tagFilter']);
     }
 
     /**
@@ -59,7 +79,7 @@ class AccountsController extends AppController
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);
-        $bfDate = '2020-10-24';
+        $bfDate = $this->Session->get('bfDate');
         $condition = ['Accounts.code LIKE'=>$account->code . '%'];
         $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
         	$bfDate);

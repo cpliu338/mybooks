@@ -60,6 +60,11 @@
 	<?php endif; ?>
 		</tr>
 		<?php endforeach; ?>
-	</tbody></table>
+	</tbody>
+	<tfoot>
+	<tr><td>&nbsp;</td></tr>
+	<tr><td>&nbsp;</td></tr>
+	</tr></tfoot>
+	</table>
 </div> <!-- table responsive -->
 <?php endif; ?>

@@ -86,3 +86,10 @@
 .even-row {
 	background-color: #eee;
 }
+
+#selectable .ui-selecting { background: #FECA40; }
+#toggleable .ui-selected { background: #F39814; color: white; }
+#toggleable { list-style-type: none; margin: 0.5em; padding: 0; width: 100%; 
+display: inline}
+#toggleable li { margin: 3px; padding: 0.4em; font-size: 1.2em; height: 14px; 
+display: inline}
