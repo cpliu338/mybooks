@@ -21,11 +21,9 @@
         <table>
             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
                     <th><?= $this->Paginator->sort('name') ?></th>
                     <th><?= $this->Paginator->sort('code') ?></th>
-                    <th><?= $this->Paginator->sort('db_label') ?></th>
-                    <th><?= $this->Paginator->sort('cr_label') ?></th>
+                    <th><?= __('Balance') ?></th>
                     <th><?= $this->Paginator->sort('currency') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
@@ -33,17 +31,17 @@
             <tbody>
                 <?php foreach ($accounts as $account): ?>
                 <tr>
-                    <td><?= $this->Number->format($account->id) ?></td>
                     <td><?= h($account->name) ?></td>
                     <td><?= h($account->code) ?></td>
-                    <td><?= h($account->db_label) ?></td>
-                    <td><?= h($account->cr_label) ?></td>
+                    <td data-accid="<?=$account->id?>" class="autoload" style="text-align:right; font-family:Courier New">
+                    	<?= __('Loading') . '...'?>
+					</td>
                     <td><?= h($account->currency) ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $account->id]) ?>
-                        <?= $this->Html->link(__('Summary'), ['action' => 'summary-view', $account->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $account->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $account->id], ['confirm' => __('Are you sure you want to delete # {0}?', $account->id)]) ?>
+                        <?= $this->Html->link('', ['action' => 'view', $account->id], ['class'=>'fa fa-file-o', 'title'=>__('View')]) ?>
+                        <?= $this->Html->link('', ['action' => 'summary-view', $account->id], ['class'=>'fa fa-files-o', 'title'=>__('Summary')]) ?>
+                        <?= $this->Html->link('', ['action' => 'edit', $account->id], ['class'=>'fa fa-pencil', 'title'=>__('Edit')]) ?>
+                        <?php // $this->Form->postLink(__('Delete'), ['action' => 'delete', $account->id], ['confirm' => __('Are you sure you want to delete # {0}?', $account->id)]) ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -95,6 +93,21 @@ $(function () {
 		}
 		if (!found) selected.push($(this).data('id'));
 		$(this).toggleClass("ui-selected");
+	});
+	$(".autoload").each(function () {
+		$.ajax({
+			url: "<?=$this->url->build(['action'=>'checkBalance'])?>/" + $(this).data('accid'),
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			headers: {
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content')},
+		  	method: 'get'
+		}).success(function (content) {
+			//console.log(content.balance);
+			$("td[data-accid="+content.account_id+"]").html(content.balance);
+		}).error(function (jqXHR, textStatus, errorThrown) {
+			$(this).html(JSON.stringify(errorThrown));
+		});
 	});
 });
 </script>

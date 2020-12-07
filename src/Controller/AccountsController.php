@@ -20,7 +20,10 @@ class AccountsController extends AppController
     {
     	$tagfilter = explode(',', $this->Session->get('tagFilter'));
     	if (count($tagfilter) == 0) $tagfilter = [0];
-    	$query = $this->Accounts->find()->distinct('Accounts.id');
+    	$query = $this->Accounts->find()
+    		->select(['Accounts.id', 'Accounts.currency', 'Accounts.code',
+    			'Accounts.name'	])
+    		->distinct('Accounts.id');
         $accounts = (in_array(0, $tagfilter)) ?
         	$this->paginate($query) :
         	$this->paginate($query->matching('Tags', function ($q) use ($tagfilter) {
@@ -35,7 +38,7 @@ class AccountsController extends AppController
 
     public function setFilter() {
     	$tagFilter = $this->request->input('json_decode');
-    	if (in_array(0, $tagFilter))
+    	if (in_array(0, $tagFilter) || empty($tagFilter))
     		$tagFilter = [0];
     	$this->Session->set('tagFilter', implode(",", $tagFilter));
     	$this->set(compact('tagFilter'));
@@ -59,7 +62,7 @@ class AccountsController extends AppController
         $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
         	$bfDate);
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
-			$bfDate);
+			$bfDate, 'home_amount');
 		$this->loadModel('Commodities');
 		$commodity = $this->Commodities->find()->first();
 		$commodities = $this->Commodities->find('list');
@@ -84,9 +87,30 @@ class AccountsController extends AppController
         $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
         	$bfDate);
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
-			$bfDate);
+			$bfDate, 'real_amount');
         $this->set(compact('account', 'bf', 'bfDate'));
 		//$this->viewBuilder()->setOption('serialize', ['account']);
+    }
+    
+    public function checkBalance($account_id) {
+    	$acc = $this->Accounts->get($account_id);
+    	$first_code = ($acc->code)[0];
+    	$balance = $this->aggregateBefore(['Accounts.id'=>$account_id,
+    			'Transactions.date1 >=' => '2020-08-01'], '', 'home_amount');
+    	if (strpos('15', $first_code) === false) {;
+    		// inc = positive
+    		$balance = $balance < -0.0001 ?
+    			sprintf('%.2f DB', 0-$balance) :
+    			sprintf('%.2f &nbsp;&nbsp;', $balance) ;
+    	}
+    	else {
+    		// inc = negative
+    		$balance = $balance > 0.0001 ?
+    			sprintf('%.2f CR', $balance) :
+    			sprintf('%.2f &nbsp;&nbsp;', 0-$balance) ;
+    	}
+        $this->set(compact('balance', 'account_id'));
+		$this->viewBuilder()->setOption('serialize', ['balance', 'account_id']);
     }
     
     private function entriesInPeriod($condition, $bfDate) {
@@ -94,13 +118,13 @@ class AccountsController extends AppController
         	where($condition)->order('Transactions.date1')->order('Transactions.date1');
     }
 
-    private function aggregateBefore($condition, $bfDate) {
+    private function aggregateBefore($condition, $bfDate, $amount) {
         $query = $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions']);
         $query->where($condition);
         $aggregate = 0;
         foreach ($query->select([
         		'Entries.account_id', 
-        		'total'=> $query->func()->sum('Entries.real_amount')])->
+        		'total'=> $query->func()->sum("Entries.$amount")])->
         		group('Entries.account_id') as $row) {
         	$aggregate += $row->total;
 		}
