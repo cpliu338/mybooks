@@ -72,11 +72,11 @@ class EntriesTable extends Table
             ->allowEmptyString('status');
 
         $validator
-            ->decimal('real_amount')
+            ->decimal('real_amount', 2)
             ->allowEmptyString('real_amount');
 
         $validator
-            ->decimal('home_amount')
+            ->decimal('home_amount', 2)
             ->allowEmptyString('home_amount');
 
         $validator

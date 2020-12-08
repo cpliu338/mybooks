@@ -129,7 +129,7 @@
 	label = $("<label for='"+homeamt_id+"'></label>");
 	label.text(currency_val);
 	fieldset.append(label);
-	homeamt = $("<input type='number'>");
+	homeamt = $("<input type='number' step='0.01'>");
 	homeamt.attr('id', homeamt_id);
 	homeamt.attr('name', `entry${index}_homeamount`);
 	homeamt.attr('class', 'amount');
