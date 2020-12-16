@@ -62,4 +62,11 @@ class AppController extends Controller
 		$env = Configure::read('env', '');
 		$this->set(compact('menuitems', 'env'));
     }
+    
+    protected function setupTagFilter() {
+    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
+        $tags = $this->Accounts->Tags->find('list');
+        $this->set(compact('tags', 'tagfilter'));
+        //return $tagfilter;
+    }
 }

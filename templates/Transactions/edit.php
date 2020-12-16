@@ -1,3 +1,14 @@
+<?php /* 
+	$this->start('css');
+? >
+<style>
+.inline-div label {
+	display: inline;
+}
+</style>
+< ?php 
+	$this->end();
+*/?>
 <?= $this->Form->create($form, ['id'=>'main-form']) ?>
 <fieldset>
 <?php
@@ -6,7 +17,7 @@
 	$this->Form->control('tran_desc');
 ?>
 </fieldset>
-<button class="btn-accent" id="add-split">Add split</button>
+<button class="btn-accent" id=" add-split">Add split</button>
 <button id="edit-commodity" class="btn-accent">
 	Edit commodity
 </button>
@@ -91,12 +102,6 @@
     	homeCurrency
     	);
 <?php endfor; ?>
-    /*
-    $("#entry1-homeamount").change(function() {
-		calcConversion(1, $("label[for=entry1-homeamount]").text()); 
-		$("#confirm").attr('disabled', !confirmable());
-    });
-    */
   } );
   function addSplit(index, entryid_val, account_val,
   	  accountid_val, homeamount_val, realamount_val,
@@ -143,7 +148,20 @@
 	div = $("<div></div>");
 	div.attr('id', `entry${index}-msg`);
 	div.text(`Equals ${homecurrency_val} ${Math.abs(realamount_val)}`);
-	fieldset.append(div);
+	fieldset.append(div);         
+	/*
+	labels = $("<div class='inline-div'></div>");
+	labels.attr('id', `entry${index}-labels`);
+	ar_labels = ['red', 'yellow'];
+	ar_labels.forEach(function(value, index) {
+		cbox = $(`<input type='checkbox' value='val${index}'>`);
+		lbl = $("<label></label>");
+		lbl.append(cbox);
+		lbl.append(`Value ${value}`);
+		labels.append(lbl);
+	});
+	fieldset.append(labels);
+	*/
 	$("#main-form fieldset").last().after(fieldset);
     $( "#"+id).autocomplete({
       source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",

@@ -17,7 +17,8 @@
                     echo $this->Form->control('db_label');
                     echo $this->Form->control('cr_label');
                     echo $this->Form->control('currency');
-                    echo $this->Form->control('tags._ids', ['options' => $tags]);
+                    echo $this->Form->control('tags._ids', ['options' => $tags,
+                    		'multiple'=>'checkbox']);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

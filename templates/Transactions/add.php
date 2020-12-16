@@ -1,3 +1,6 @@
+<div>
+<?= $this->element('tag_chooser', ['ajax'=>true])?>
+</div>
 <?= $this->Form->create($form, ['class'=>'abbrev-form2', 'id'=>'form-add']) ?>
 <fieldset>
 <?php

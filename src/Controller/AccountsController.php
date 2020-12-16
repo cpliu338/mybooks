@@ -18,7 +18,8 @@ class AccountsController extends AppController
      */
     public function index()
     {
-    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
+    	$this->setupTagFilter();//debug($this);
+    	$tagfilter = $this->viewBuilder()->getVar('tagfilter');
     	if (count($tagfilter) == 0) $tagfilter = [0];
     	$query = $this->Accounts->find()
     		->select(['Accounts.id', 'Accounts.currency', 'Accounts.code',
@@ -32,8 +33,7 @@ class AccountsController extends AppController
 					]);
 			})
 		);
-        $tags = $this->Accounts->Tags->find('list');
-        $this->set(compact('accounts', 'tags', 'tagfilter'));
+        $this->set(compact('accounts'));
     }
 
     public function setFilter() {
@@ -78,7 +78,14 @@ class AccountsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function summaryView($id = null)
-    {
+    {/*
+    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
+    	if (count($tagfilter) == 0) $tagfilter = [0];
+    	$query = $this->Accounts->find()->where( ['code LIKE'=>'1-01%']);
+    	$query->matching('Tags', function ($q) use ($tagfilter) {
+			return $q->where(['Tags.id IN' => [1,2]]);
+    	});
+    	$this->set('x',$query->toArray());*/
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);
@@ -89,7 +96,7 @@ class AccountsController extends AppController
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate, 'real_amount');
         $this->set(compact('account', 'bf', 'bfDate'));
-		//$this->viewBuilder()->setOption('serialize', ['account']);
+		//$this->viewBuilder()->setOption('serialize', ['account']);     
     }
     
     public function checkBalance($account_id) {
@@ -167,7 +174,15 @@ class AccountsController extends AppController
     public function suggest() {
     	$c=$this->request->getQuery('term');
     	$result = [];
-    	foreach ($this->Accounts->find('underCode', ['code'=>$c])->order('code') as $acc) {
+    	
+    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
+    	if (count($tagfilter) == 0) $tagfilter = [0];
+    	$query = $this->Accounts->find()->where( ['code LIKE'=>"$c%"]);
+    	$query->matching('Tags', function ($q) use ($tagfilter) {
+			return $q->where(['Tags.id IN' => $tagfilter]);
+    	});
+    	
+    	foreach ($query->order('code') as $acc) {
     		$result[] = ['id'=> $acc->id,
     			'value'=> $acc->code . ' : ' . $acc->name];
     	}

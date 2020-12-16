@@ -52,6 +52,8 @@ class TransactionsController extends AppController
      */
     public function add()
     {
+    	$this->setupTagFilter();//debug($this);
+    	$tagfilter = $this->viewBuilder()->getVar('tagfilter');
         $transaction = $this->Transactions->newEmptyEntity();
         if ($this->request->is('post') && !$this->request->is('ajax')) {
         	$data = $this->request->getData();
@@ -85,32 +87,8 @@ class TransactionsController extends AppController
         	$account1 = $this->Accounts->get(
         		$this->request->getQuery('account_id', '1')
 			);
-        	/*
-        	$form = new TransactionForm();
-        	$form->set([
-				'tran_date' => new Date(),
-				'entry1_dbcr' => $this->request->getQuery('db') ? -1 : 1,
-				'entry1_accountid' => $account1->id,
-				'entry1_accountid' => $account1->id,
-				'entry1_account' => $account1->code . ':' . $account1->name,
-				//'account_options' => ['-1'=>$account1->db_label, '1'=>$account1->cr_label],
-			]);
-			$entry1_options = [
-				'-1'=>$account1->db_label,
-				'1'=>$account1->cr_label
-				];
-			$homeCurrency = Configure::read('HomeCurrency');
-        	$this->set(compact('form', 'entry1_options', 'account1', 'homeCurrency'));
-        */
-        	//$this->set(compact('transaction'));
 			$this->add_edit_get($transaction, $account1->id);
-        } /*
-        else { 
-        	$this->loadModel('Accounts');
-        	$accounts = $this->Accounts->find('list', ['limit' => 200]);
-        	$entry1 = $this->Transactions->Entries->newEntity(['account_id'=>1]);
-        	$entry2 = $this->Transactions->Entries->newEmptyEntity();
-        } */
+        } 
         $this->set(compact('transaction', 'account1'));
     }
 
