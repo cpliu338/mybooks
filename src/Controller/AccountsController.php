@@ -145,14 +145,14 @@ class AccountsController extends AppController
      */
     public function add()
     {
+    	$this->setupTagFilter();
+    	//$tagfilter = $this->viewBuilder()->getVar('tagfilter');
         $account = $this->Accounts->newEmptyEntity();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $account = $this->Accounts->patchEntity($account, $data);
             $parent = $this->Accounts->get($data['parent_id']);
             $account->code = $this->Accounts->findNextChildCode($parent->code);
-            //$this->log($parent_code, 'info');
-            //debug($account);
             if ($this->request->is('ajax')) {
             	$this->set(compact('account'));
             	$this->viewBuilder()->setOption('serialize', ['account']);
@@ -174,19 +174,20 @@ class AccountsController extends AppController
     public function suggest() {
     	$c=$this->request->getQuery('term');
     	$result = [];
-    	
     	$tagfilter = explode(',', $this->Session->get('tagFilter'));
-    	if (count($tagfilter) == 0) $tagfilter = [0];
     	$query = $this->Accounts->find()->where( ['code LIKE'=>"$c%"]);
+    	if (count($tagfilter) == 0) $tagfilter = [0];
+    	if (!in_array(0, $tagfilter))
+    	$query =
     	$query->matching('Tags', function ($q) use ($tagfilter) {
 			return $q->where(['Tags.id IN' => $tagfilter]);
     	});
-    	
+    	/**/
     	foreach ($query->order('code') as $acc) {
     		$result[] = ['id'=> $acc->id,
     			'value'=> $acc->code . ' : ' . $acc->name];
     	}
-    	$this->set(compact('result'));
+    	//$this->set(compact('result'));
         //$this->viewBuilder()->setOption('serialize', ['result']);
         $response = $this->response->withType('application/json')
         	->withStringBody(json_encode($result));

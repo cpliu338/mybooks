@@ -52,8 +52,8 @@ class TransactionsController extends AppController
      */
     public function add()
     {
-    	$this->setupTagFilter();//debug($this);
-    	$tagfilter = $this->viewBuilder()->getVar('tagfilter');
+    	$this->setupTagFilter();
+    	//$tagfilter = $this->viewBuilder()->getVar('tagfilter');
         $transaction = $this->Transactions->newEmptyEntity();
         if ($this->request->is('post') && !$this->request->is('ajax')) {
         	$data = $this->request->getData();
@@ -101,6 +101,8 @@ class TransactionsController extends AppController
      */
     public function edit($id = null)
     {
+    	$this->setupTagFilter();
+    	//$tagfilter = $this->viewBuilder()->getVar('tagfilter');
         $transaction = $this->Transactions->get($id, [
             'contain' => ['Entries', 'Entries.Accounts'],
         ]);

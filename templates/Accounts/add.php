@@ -4,6 +4,9 @@
  * @var \App\Model\Entity\Account $account
  */
 ?>
+<div>
+<?= $this->element('tag_chooser', ['ajax'=>true])?>
+</div>
 <div class="row">
     <div class="column-responsive column-80">
         <div class="accounts form content">
@@ -29,7 +32,7 @@
 <script>
   $( function() {
     $( "#parent" ).autocomplete({
-      source: "/accounts/suggest",
+      source: "<?=$this->url->build(['controller'=>"Accounts",'action'=>"suggest"])?>",
       minLength: 1,
       select: function( event, ui) {
       	  /*ui = ui.result;

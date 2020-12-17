@@ -9,6 +9,9 @@
 < ?php 
 	$this->end();
 */?>
+<div>
+<?= $this->element('tag_chooser', ['ajax'=>true])?>
+</div>
 <?= $this->Form->create($form, ['id'=>'main-form']) ?>
 <fieldset>
 <?php
