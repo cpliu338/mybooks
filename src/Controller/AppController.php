@@ -57,6 +57,7 @@ class AppController extends Controller
         	['href'=>['controller'=>'Users', 'action'=>'index'], 'innerHtml'=>__('Users'), 'id'=>'users-link'],
         	['href'=>['controller'=>'Tags', 'action'=>'index'], 'innerHtml'=>__('Tags'), 'id'=>'tags-link'],
         	['href'=>['controller'=>'Users', 'action'=>'logout'], 'innerHtml'=>__('Log out'), 'id'=>'logout-link'],
+        	['href'=>['controller'=>'Commodities', 'action'=>'index'], 'innerHtml'=>__('Commodities'), 'id'=>'commodities-link'],
         	['href'=>'#', 'innerHtml'=>__('Settings'), 'id'=>'link-settings']
 		];
 		$env = Configure::read('env', '');

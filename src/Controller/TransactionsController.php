@@ -127,6 +127,7 @@ class TransactionsController extends AppController
                 	$entry->real_amount = $data["entry${index}_realamount"] * $data["entry${index}_dbcr"];
                 	$entry->home_amount = $data["entry${index}_homeamount"] * $data["entry${index}_dbcr"];
                 	$entry->account_id = $data["entry${index}_accountid"];
+                	//$this->log($data["entry${index}_accountid"], 'info');
                 	if ($this->Transactions->Entries->save($entry)) {
                 		$en_id = $entry->id;
                 		$message = $message . ' ' .  $en_id;
