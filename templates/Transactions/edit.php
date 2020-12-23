@@ -20,7 +20,7 @@
 	$this->Form->control('tran_desc');
 ?>
 </fieldset>
-<button class="btn-accent" id=" add-split">Add split</button>
+<button class="btn-accent" id="add-split">Add split</button>
 <button id="edit-commodity" class="btn-accent">
 	Edit commodity
 </button>
@@ -189,6 +189,7 @@
 	realamt.attr('value', Math.abs(realamount_val));
   }
   $("#add-split").click(function (ev){
+		console.log('clicked'); 
   	ev.preventDefault();
   	addSplit($("#main-form select").length+1, '', '',
   	  1, '', '',
@@ -243,7 +244,6 @@ function confirmable() {
 			* $(`#entry${i}-dbcr`).val();
 	} /* 
 	if (Math.abs(sum) > 0.005) {
-		console.log(`Fieldsets: ${length} sum: ${sum}`); 
 		length = $("fieldset").length;
 	} */
 	return Math.abs(sum) < 0.005;
