@@ -101,6 +101,46 @@
 		$("#conversion").data('alternate', save);
 	}, 3000);
   } );
+
+  function calcBalance(index) {
+  	  i=1;
+  	  accum = 0.0;
+  	  while (typeof $(`#entry${i}-homeamount`).val() !== "undefined") {
+  	  	  if (index != i) {
+  	  	  	  accum += $(`#entry${i}-realamount`).val() * $(`#entry${i}-dbcr`).val();
+  	  	  }
+  	  	  i++;
+  	  }
+  	  $(`#entry${index}-realamount`).val(0-accum.toFixed(2));
+  	  currency = $(`label[for=entry${index}-homeamount]`).text();
+  	  homeCurrency = "<?=$homeCurrency?>";
+  	  if (currency != homeCurrency) {
+			$.ajax({
+				url: "<?=$this->url->build(['controller'=>"Commodities",'action'=>"view",
+				])?>" + `?name=${encodeURIComponent(currency)}`,
+				dataType: "json"
+			}).success(function (data){
+				realamt = parseFloat($(`#entry${index}-realamount`).val());
+				//console.log('index:'+ index);
+				homeamt = (realamt * data.commodity.home_amount / data.commodity.real_amount).toFixed(2);
+				$(`#entry${index}-msg`).text(`equals ${realamt} ${homeCurrency}`);
+				$("#confirm").attr('disabled', !confirmable());
+  	  	  $(`#entry${index}-homeamount`).val(Math.abs(homeamt));
+  	  	  $(`#entry${index}-dbcr`).val($(`#entry${index}-realamount`).val() > -0.001 ? 1 : -1);
+				
+				/*
+				realamt = (parseFloat($(homeamtid).val()) * data.commodity.real_amount / data.commodity.home_amount).toFixed(2);
+				$(msgid).text(`equals ${realamt} ${homeCurrency}`);
+				$(realamtid).val(realamt);
+				$("#confirm").attr('disabled', !confirmable());*/
+			});
+  	  }
+  	  else {
+  	  	  $(`#entry${index}-homeamount`).val(Math.abs($(`#entry${index}-realamount`).val()).toFixed(2));
+  	  	  $(`#entry${index}-dbcr`).val($(`#entry${index}-realamount`).val() > -0.001 ? 1 : -1);
+  	  }
+  }
+
   function addSplit() {
   	index = $("#form-add fieldset").length+1;
   	clazz = index%2 ? '' : 'even-row';
@@ -148,7 +188,9 @@
       }
     });
     $("#"+`entry${index}-homeamount`).change(function() {
-  	  console.log($(this).attr('id'));
+		if ($(this).val() < -0.001) {
+			calcBalance(index);
+		}
 		calcConversion(index, $("label[for="+`entry${index}-homeamount`+"]").text()); 
 		/* this is done in the success closure
 		$("#confirm").attr('disabled', !confirmable());
@@ -203,7 +245,7 @@ function confirmable() {
 			return false;
 		sum = sum + $(`#entry${i}-realamount`).val()
 			* $(`#entry${i}-dbcr`).val();
-		console.log(`sum: ${sum}`); 
+		//console.log(`sum: ${sum}`); 
 	} 
 	if (Math.abs(sum) > 0.005) {
 		length = $("fieldset").length;

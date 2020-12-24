@@ -126,7 +126,7 @@
 				dataType: "json"
 			}).success(function (data){
 				realamt = parseFloat($(`#entry${index}-realamount`).val());
-				console.log('index:'+ index);
+				//console.log('index:'+ index);
 				homeamt = (realamt * data.commodity.home_amount / data.commodity.real_amount).toFixed(2);
 				$(`#entry${index}-msg`).text(`equals ${realamt} ${homeCurrency}`);
 				$("#confirm").attr('disabled', !confirmable());
@@ -233,7 +233,7 @@
 	realamt.attr('value', Math.abs(realamount_val));
   }
   $("#add-split").click(function (ev){
-		console.log('clicked'); 
+		//console.log('clicked'); 
   	ev.preventDefault();
   	addSplit($("#main-form select").length+1, '', '',
   	  1, '', '',
