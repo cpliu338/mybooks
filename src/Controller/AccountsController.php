@@ -19,11 +19,13 @@ class AccountsController extends AppController
     public function index()
     {
     	$this->setupTagFilter();//debug($this);
-    	$tagfilter = $this->viewBuilder()->getVar('tagfilter');
+    	$tagfilter = $this->viewBuilder()->getVar('tagfilter');      
+    	$nameFilter=$this->request->getQuery('nameFilter');
     	if (count($tagfilter) == 0) $tagfilter = [0];
     	$query = $this->Accounts->find()
     		->select(['Accounts.id', 'Accounts.currency', 'Accounts.code',
     			'Accounts.name'	])
+    		->where(['Accounts.name LIKE' =>'%' . $nameFilter . '%'])
     		->distinct('Accounts.id');
         $accounts = (in_array(0, $tagfilter)) ?
         	$this->paginate($query) :
@@ -33,7 +35,7 @@ class AccountsController extends AppController
 					]);
 			})
 		);
-        $this->set(compact('accounts'));
+        $this->set(compact('accounts','nameFilter'));
     }
 
     public function setFilter() {

@@ -292,4 +292,25 @@ function confirmable() {
 	} */
 	return Math.abs(sum) < 0.005;
 }
+$("#remember").click(function() {
+	data = {
+		home_amount: $("#home-amount").val(),
+		real_amount: $("#real-amount").val(),
+		_method: "PUT"
+	};
+	$.ajax({
+		url: "<?=$this->url->build(['controller'=>"Commodities",'action'=>"edit"])
+		?>" + "/" + $("#id").val(),
+		method: 'post',
+		//contentType: 'x-www-form-urlencoded',
+		headers: {
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content')},
+		dataType: "json",
+		data: data
+	}).success(function (data) {
+		save = data.message;
+		$("#conversion").text("OK");
+		$("#conversion").data('alternate', data.message);
+	});
+});
 </script>

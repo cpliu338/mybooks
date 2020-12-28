@@ -80,10 +80,24 @@ class CommoditiesController extends AppController
             $commodity = $this->Commodities->patchEntity($commodity, $this->request->getData());
             if ($this->Commodities->save($commodity)) {
                 $this->Flash->success(__('The commodity has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                if ($this->request->is('ajax')) {
+                	$result = ['message'=> 'Saved', 'debug'=>
+                		var_export($this->request->getData(), true)];
+                	return $this->response->withType('application/json')
+                		->withStringBody(json_encode($result));
+                }
+                else
+                	return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The commodity could not be saved. Please, try again.'));
+            else {
+                if ($this->request->is('ajax')) 
+                	$this->Flash->error(__('The commodity could not be saved. Please, try again.'));
+                else {
+                	$result = ['message'=> 'Error'];
+                	return $this->response->withType('application/json')
+                		->withStringBody(json_encode($result));
+                }
+            }
         }
         $this->set(compact('commodity'));
     }

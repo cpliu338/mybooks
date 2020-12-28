@@ -60,6 +60,7 @@ class TransactionsController extends AppController
             $transaction->date1 = $data['tran_date'];
             $transaction->description = $data['tran_desc'];
             if ($this->Transactions->save($transaction)) {
+            	$this->Session->set('transactionDate', $transaction->date1);
             	$tran_id = $transaction->id;
             	$entry1 = $this->Transactions->Entries->newEmptyEntity();
             	$entry1->account_id = $data['entry1_accountid'];
@@ -87,6 +88,7 @@ class TransactionsController extends AppController
         	$account1 = $this->Accounts->get(
         		$this->request->getQuery('account_id', '1')
 			);
+            $transaction->date1 = $this->Session->get('transactionDate');
 			$this->add_edit_get($transaction, $account1->id);
         } 
         $this->set(compact('transaction', 'account1'));
@@ -161,7 +163,7 @@ class TransactionsController extends AppController
     	if ($account1_id) { // add with account1 id stated
     		$account1 = $this->Accounts->get($account1_id);
         	$form->set([
-				'tran_date' => new Date(),
+				'tran_date' => $transaction->date1,
 				'entry1_dbcr' => 1,
 				'entry1_accountid' => $account1_id,
 			]);

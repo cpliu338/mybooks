@@ -9,12 +9,16 @@
 </div>
 <div class="accounts index content">
     <?= $this->Html->link(__('New Account'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Accounts') ?></h3>
+    <h3><?= __('Accounts') ?>
+    </h3>
     <div class="table-responsive">
         <table>
             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('name') ?></th>
+                    <th><?= $this->Paginator->sort('name') ?>
+                        <input placeholder="name contains" id="name-filter"
+                        value="<?=$nameFilter?>">
+					</th>
                     <th><?= $this->Paginator->sort('code') ?></th>
                     <th><?= __('Balance') ?></th>
                     <th><?= $this->Paginator->sort('currency') ?></th>
@@ -69,6 +73,14 @@ $(function () {
 		}).error(function (jqXHR, textStatus, errorThrown) {
 			$(this).html(JSON.stringify(errorThrown));
 		});
+	});
+	$("#name-filter").change(function () {
+		value = $("#name-filter").val();
+		window.location = '<?=$this->url->build([
+			'controller'=>'Accounts','action'=>'index'
+				])?>'+
+				`?nameFilter=${encodeURIComponent(value)}`;
+		window.reload();
 	});
 });
 </script>

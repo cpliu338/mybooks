@@ -18,6 +18,7 @@ class SessionComponent extends Component
     {
     	$this->defaultValues = [
 		'bfDate' => (FrozenDate::now()->subDays(100))->i18nFormat('yyyy-MM-dd'),
+		'transactionDate' => (FrozenDate::now()->subDays(100))->i18nFormat('yyyy-MM-dd'),
 		'tagFilter' => "0",
 		];
     }	
