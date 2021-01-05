@@ -24,7 +24,7 @@
 			<td></td>
 	<?php endif; ?>
 			<td></td><td></td>
-			<td><?= $bf ?></td>
+			<td class="balance"><?= $this->Number->precision($bf,2) ?></td>
 			<td></td><td></td>
 		</tr>
 		<?php $balance = $bf; ?>
@@ -32,22 +32,26 @@
 		<tr>
 			<td><?= $entries->transaction->date1->i18nFormat('yyyy-MM-dd') ?></td>
 	<?php if ($summary): ?>
-			<td><?= h($entries->account->name) ?></td>
+			<td>
+			<?= $this->Html->link($entries->account->name, ['action'=>'view', 
+					$entries->account_id]) ?>
+			</td>
 	<?php endif; ?>
 			<td><?= $this->Html->link(h($entries->transaction->description),
 				['controller'=>'Transactions', 'action'=>'edit', $entries->transaction_id])?>
 			( <?= h($entries->status) ?> )</td>
 	<?php if ($entries->get($amount)<0): ?>
-			<td class="db"><?= 0-$entries->get($amount) ?></td><td class="cr"></td>
+			<td class="db">
+			<?= $this->Number->precision(0-$entries->get($amount),2) ?></td><td class="cr"></td>
 	<?php else: ?>
-			<td class="db"></td><td class="cr"><?= $entries->get($amount) ?></td>
+			<td class="db"></td><td class="cr"><?= $this->Number->precision($entries->get($amount),2) ?></td>
 	<?php endif; ?>
 	<?php $balance += $entries->get($amount); ?>
 			<td class="balance">
 	<?php if (strpos('14', substr($account->code, 0, 1)) === false): ?>
-			<?= $balance<=0 ? 0-$balance : "$balance DB" ?>
+			<?= $balance<=0 ? $this->Number->precision(0-$balance,2) : $this->Number->precision($balance,2) . " DB" ?>
 	<?php else: ?>
-			<?= $balance>=0 ? "$balance CR" : 0 - $balance ?>
+			<?= $balance>=0 ? $this->Number->precision($balance, 2) . " CR" : $this->Number->precision(0 - $balance,2) ?>
 	<?php endif ?>
 			</td>
 			<td> h($entries->tags) </td>

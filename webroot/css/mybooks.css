@@ -93,3 +93,8 @@
 display: inline}
 #toggleable li { margin: 3px; padding: 0.4em; font-size: 1.2em; height: 14px; 
 display: inline}
+
+.db, .cr, .balance  {
+	text-align: right;
+	font-family:Courier New;
+}
