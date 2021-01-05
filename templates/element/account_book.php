@@ -39,7 +39,15 @@
 	<?php endif; ?>
 			<td><?= $this->Html->link(h($entries->transaction->description),
 				['controller'=>'Transactions', 'action'=>'edit', $entries->transaction_id])?>
-			( <?= h($entries->status) ?> )</td>
+			( 
+<?php if ($summary): ?>
+<?=h($entries->status)?> 
+<?php else: ?>
+	<a href="#" class="check-entry" data-entryid="<?=$entries->id?>">
+	<?=$entries->status?>
+	</a>
+<?php endif;?> 
+			)</td>
 	<?php if ($entries->get($amount)<0): ?>
 			<td class="db">
 			<?= $this->Number->precision(0-$entries->get($amount),2) ?></td><td class="cr"></td>
@@ -72,3 +80,21 @@
 	</table>
 </div> <!-- table responsive -->
 <?php endif; ?>
+<script>
+	$(".check-entry").click(function() {
+		element = $(this);
+		element.html("...");
+		$.ajax({
+			url: "<?=$this->url->build(['controller'=>'Entries', 'action'=>'check'])?>"+
+			"/"+$(this).data("entryid"),
+			headers: {
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content'),
+			"Accept": "application/json"},
+		  	method: 'post'
+		}).success(function (content) {
+			element.html(content.status);
+		}).error(function (jqXHR, textStatus) {
+			element.html(textStatus);
+		});
+	});			
+</script>

@@ -109,4 +109,20 @@ class EntriesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    
+    public function check($id = null) {
+        $this->request->allowMethod(['post', 'delete']);
+        $entry = $this->Entries->get($id);
+        $status = 'n';
+        switch ($entry->status) {
+        case 'n':
+        	$status = 'c'; break;
+        case 'c':
+        	$status = 'y'; break;
+        }
+        $entry->status = $status;
+        $this->Entries->save($entry);
+        $this->set(compact('status'));
+        $this->viewBuilder()->setOption('serialize', ['status']);
+    }
 }
