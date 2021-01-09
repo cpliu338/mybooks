@@ -42,4 +42,15 @@ class Entry extends Entity
         'account' => true,
         'transaction' => true,
     ];
+    
+    public function getAsList($property) {
+    	$x = json_decode($this->labels);
+    	/*$labels =* / json_decode('{"labels":["a","b"]}');*/
+    	if (json_last_error() !== JSON_ERROR_NONE) {
+    		return 'error';
+    	}
+    	if (!property_exists($x, $property))
+    		return '';
+    	return implode(' ', $x->$property);
+    }
 }

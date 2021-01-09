@@ -125,4 +125,26 @@ class EntriesController extends AppController
         $this->set(compact('status'));
         $this->viewBuilder()->setOption('serialize', ['status']);
     }
+    
+    public function updateLabels($id) {
+    	$raw = $this->request->getData('labels');
+    	$ar = preg_split("/\\s+/", $raw ?? '') ?? [];
+        $labels = array_values(
+        	array_filter($ar, function($element){
+			return preg_match('/^[A-Za-z0-9_]+$/', $element)==1;
+        })
+        );
+        $field = json_encode(['labels'=>$labels]);
+        $entry = $this->Entries->get($id);
+        $this->Entries->patchEntity($entry, ['labels'=>$field]);
+        if ($this->Entries->save($entry)) {
+        	$result = 'saved';
+        }
+        else {
+        	$result = 'cannot save';
+        }
+        $this->set(compact('labels', 'result'));
+        $this->viewBuilder()->setOption('serialize', ['labels', 'result']);
+    }
+    
 }

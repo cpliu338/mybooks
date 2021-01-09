@@ -60,6 +60,7 @@
 //var selected = [<?php echo join($tagfilter, ',')?>];
 $(function () {
 	$(".autoload").each(function () {
+		element = $(this);
 		$.ajax({
 			url: "<?=$this->url->build(['action'=>'checkBalance'])?>/" + $(this).data('accid'),
 			dataType: 'json',
@@ -71,7 +72,7 @@ $(function () {
 			//console.log(content.balance);
 			$("td[data-accid="+content.account_id+"]").html(content.balance);
 		}).error(function (jqXHR, textStatus, errorThrown) {
-			$(this).html(JSON.stringify(errorThrown));
+			$element.html(JSON.stringify(errorThrown));
 		});
 	});
 	$("#name-filter").change(function () {
