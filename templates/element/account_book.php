@@ -88,7 +88,7 @@
 	<?php if (!$summary): ?>
 			<td class="actions">
 <?= $this->Html->link('', '#', ['class'=>'fa fa-tag update-labels', 'title'=>__('Update labels')]) ?>
-				<?= $this->Html->link(__('View'), ['controller' => 'Entries', 'action' => 'view', $entries->id]) ?>
+<?= $this->Html->link('', '#', ['class'=>'fa fa-search view', 'title'=>__('View transaction')]) ?>
 				<?= $this->Form->postLink('', ['controller' => 'Entries', 'action' => 'delete', $entries->id], [
 						'class'=>'fa fa-minus-circle', 'title'=>__('Delete'),
 						'confirm' => __('Are you sure you want to delete # {0}?', $entries->id)]) ?>
@@ -104,6 +104,16 @@
 	</table>
 </div> <!-- table responsive -->
 <?php endif; ?>
+<div id='view-transaction' class="table-unresponsive">
+	<table>
+		<thead><tr>
+			<th id="tran-date">Date</th>
+			<th id="tran-desc">Desc</th>
+		</tr></thead>
+		<tbody id="tran-table">
+		</tbody>
+	</table>
+</div>
 <script>
 	$(".check-entry").click(function() {
 		element = $(this);
@@ -151,4 +161,16 @@
 			element.addClass('fa-exclamation');
 		});
 	});			
+$(function() {
+	$("#view-transaction").dialog({
+		autoOpen: false,
+		title: 'View trans',
+	});
+	$(".view").click(function (){
+		$("#view-transaction").dialog({
+			title: 'View transaction',
+		});
+		$("#view-transaction").dialog("open");
+	});
+});
 </script>
