@@ -42,6 +42,17 @@ class EntriesController extends AppController
         $this->set(compact('entry'));
     }
 
+    public function viewPeerEntries($id = null)
+    {
+        $entry = $this->Entries->get($id, [
+            'contain' => ['Accounts', 'Transactions'],
+        ]);
+        $peers = $this->Entries->find()->contain(['Accounts'])->where([
+			'Entries.id !='=> $id, 'transaction_id'=>$entry->transaction_id])->toArray();
+        $this->set(compact('entry', 'peers'));
+		$this->viewBuilder()->setOption('serialize', ['entry', 'peers']);
+    }
+
     /**
      * Add method
      *
