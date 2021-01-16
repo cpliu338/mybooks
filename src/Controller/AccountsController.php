@@ -80,14 +80,7 @@ class AccountsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function summaryView($id = null)
-    {/*
-    	$tagfilter = explode(',', $this->Session->get('tagFilter'));
-    	if (count($tagfilter) == 0) $tagfilter = [0];
-    	$query = $this->Accounts->find()->where( ['code LIKE'=>'1-01%']);
-    	$query->matching('Tags', function ($q) use ($tagfilter) {
-			return $q->where(['Tags.id IN' => [1,2]]);
-    	});
-    	$this->set('x',$query->toArray());*/
+    {
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
         ]);
@@ -98,9 +91,22 @@ class AccountsController extends AppController
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate, 'real_amount');
         $this->set(compact('account', 'bf', 'bfDate'));
-		//$this->viewBuilder()->setOption('serialize', ['account']);     
     }
-    
+
+	public function findLabels(string $id) {
+		$summary = $this->request->getQuery('summary');
+		if ($summary) {
+			$account = $this->Accounts->get($id);
+			$condition = ['Accounts.code LIKE'=>$account->code . '%'];
+		}
+		else {
+			$condition = ['account_id'=>$id];
+		}
+        $labels = $this->Accounts->Entries->allLabels($condition);
+        $this->set(compact('summary', 'labels'));
+		$this->viewBuilder()->setOption('serialize', ['summary', 'labels']);     
+	}
+
     public function checkBalance($account_id) {
     	$acc = $this->Accounts->get($account_id);
     	$first_code = ($acc->code)[0];

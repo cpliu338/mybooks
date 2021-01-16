@@ -11,6 +11,7 @@
 <?php
 	$amount = $summary ? 'real_amount' : 'home_amount';
 ?>
+<div id="load-labels">Loading labels ...</div>
 <div class="table-responsive">
 	<table>
 		<thead><tr>
@@ -234,5 +235,21 @@ $(function() {
 		});
 		$("#view-transaction").dialog("open");
 	});
+	
+		$.ajax({
+			url: "<?=$this->url->build(['action'=>'findLabels'])?>/" + 
+			"<?= $account->id ?>" + "?summary=" + "<?=$summary?>",
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			headers: {
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content')},
+		  	method: 'get'
+		}).success(function (content) {
+			//console.log(content.balance);
+			$("#load-labels").html("Labels: " + 
+				content.labels.sort().join(", "));
+		}).error(function (jqXHR, textStatus, errorThrown) {
+			$("#load-labels").html(JSON.stringify(errorThrown));
+		});
 });
 </script>

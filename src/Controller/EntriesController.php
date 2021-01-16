@@ -38,8 +38,13 @@ class EntriesController extends AppController
         $entry = $this->Entries->get($id, [
             'contain' => ['Accounts', 'Transactions'],
         ]);
-
-        $this->set(compact('entry'));
+        /*
+        $q = $this->Entries->find()->where([
+        		'id IN'=>$this->Entries->jsonMatch('CitiStepUp')
+        		])->toArray();
+        		*/
+        $q = $this->Entries->allLabels(['account_id'=>$id]);
+        $this->set(compact('entry', 'q'));
     }
 
     public function viewPeerEntries($id = null)

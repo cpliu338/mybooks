@@ -7,7 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Datasource\ConnectionManager;
 /**
  * Entries Model
  *
@@ -53,7 +53,37 @@ class EntriesTable extends Table
             'joinType' => 'INNER',
         ]);
     }
-
+    
+    /**
+    Find entries with a certain label
+    @param string $label the label
+    @return the list of id, [0] if none found
+    */
+    public function jsonMatch(string $label) {
+    	$sql = "SELECT id ".
+    	"FROM entries Entries WHERE JSON_CONTAINS(labels, :label, '$.labels')"
+    	;
+    	$ar[] = $label;
+    	$connection = ConnectionManager::get('default');
+    	$coll = new \Cake\Collection\Collection ($connection
+    	->execute($sql, ['label' => json_encode($ar)
+    			])->fetchAll('assoc'));
+    	$ar = $coll->extract('id')->toList();
+    	return empty($ar) ? [0] : $ar;
+    }
+    
+    public function allLabels(array $cond) {
+    	$accum = [];
+    	foreach ($this->find()->contain(['Accounts'])->where($cond) as $entry) {
+    		$json = json_decode($entry->labels);
+    		if (!property_exists($json, 'labels'))
+    			continue;
+    		foreach ($json->labels as $label) {
+    			$accum[$label] = 1;
+    		}
+    	}
+    	return array_keys($accum);
+    }
     /**
      * Default validation rules.
      *
