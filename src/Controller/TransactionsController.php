@@ -62,6 +62,7 @@ class TransactionsController extends AppController
             if ($this->Transactions->save($transaction)) {
             	$this->Session->set('transactionDate', $transaction->date1);
             	$tran_id = $transaction->id;
+            	/*
             	$entry1 = $this->Transactions->Entries->newEmptyEntity();
             	$entry1->account_id = $data['entry1_accountid'];
             	$entry1->transaction_id = $transaction->id;
@@ -77,6 +78,19 @@ class TransactionsController extends AppController
             	$entry2->real_amount = $data['entry2_realamount'] * $data['entry2_dbcr'];
             	$entry2->home_amount = $data['entry2_homeamount'] * $data['entry2_dbcr'];
             	$this->Transactions->Entries->save($entry2);
+            	*/
+            	$index = 1;
+            	while (array_key_exists("entry${index}_accountid", $data)) {
+					$entry = $this->Transactions->Entries->newEmptyEntity();
+					$entry->account_id = $data["entry${index}_accountid"];
+					$entry->transaction_id = $tran_id;
+					$entry->status = 'n';
+					$entry->real_amount = $data["entry${index}_realamount"] * $data["entry${index}_dbcr"];
+					$entry->home_amount = $data["entry${index}_homeamount"] * $data["entry${index}_dbcr"];
+					$this->Transactions->Entries->save($entry);
+					$index++;
+            	}
+            	
                 $this->Flash->success(__('The transaction has been saved.'));
                 return $this->redirect(['controller'=>'Accounts',
                 		'action' => 'view', $data['entry1_accountid']]);
