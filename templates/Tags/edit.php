@@ -24,7 +24,9 @@
                 <?php
                     echo $this->Form->control('name');
                     echo $this->Form->control('type');
-                    echo $this->Form->control('accounts._ids', ['options' => $accounts]);
+                    echo $this->Form->control('accounts._ids', [
+                    		'options' => $accounts,
+                    		'style' => 'height: 200px']);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

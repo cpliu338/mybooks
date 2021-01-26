@@ -60,8 +60,10 @@
 					$entry->account_id]) ?>
 			</td>
 	<?php endif; ?>
-			<td><?= $this->Html->link(h($entry->transaction->description),
-				['controller'=>'Transactions', 'action'=>'edit', $entry->transaction_id])?>
+			<td><?= $this->Html->link($entry->transaction->description,
+				['controller'=>'Transactions', 'action'=>'edit', $entry->transaction_id],
+				['escape'=>false]
+				)?>
 			( 
 <?php if ($summary): ?>
 <?=h($entry->status)?> 
@@ -179,6 +181,7 @@ $(function() {
 	});
 	$(".view-tran").click(function (){
 		id = $(this).closest("tr").data("entryid");
+		view_url = "<?=$this->url->build(['controller'=>"Accounts",'action'=>"view"])?>" + "/";
 		$("#view-transaction").dialog({
 			title: 'View transaction ' + id,
 		});
@@ -214,7 +217,12 @@ $(function() {
 			content.peers.forEach(function (peer) {
 				row = $("<tr></tr>");
 				cell = $("<td></td>");
-				cell.html(peer.account.name);
+				anchor = $("<a></a>");
+				anchor.attr("href", view_url + peer.account.id);
+				anchor.html(peer.account.name);
+				anchor.addClass("fa fa-search");
+				
+				cell.append(anchor);
 				row.append(cell);
 				cell1 = $("<td></td>");
 				cell1.html(peer.home_amount < 0.0 ?

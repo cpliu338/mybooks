@@ -72,7 +72,7 @@ $(function () {
 			//console.log(content.balance);
 			$("td[data-accid="+content.account_id+"]").html(content.balance);
 		}).error(function (jqXHR, textStatus, errorThrown) {
-			$element.html(JSON.stringify(errorThrown));
+			element.html(JSON.stringify(errorThrown));
 		});
 	});
 	$("#name-filter").change(function () {

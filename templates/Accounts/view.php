@@ -50,6 +50,11 @@
     <?= $this->Html->link(__('New'), ['action' => 'add', 'controller'=>'Transactions', 
     		'?'=>['account_id'=>$account->id]], ['class' => 'button float-right'
     		]) ?>
+<?php if ($account->earnsInterest()) :?>
+    <?= $this->Html->link(__('New Interest'), ['action' => 'earnsInterest', 'controller'=>'Transactions', 
+    		'?'=>['account_id'=>$account->id]], ['class' => 'button float-left'
+    		]) ?>
+<?php endif; ?>
         </div> <!-- accounts view content -->
     </div> <!-- column-responsive column-100 -->
 </div> <!--row -->

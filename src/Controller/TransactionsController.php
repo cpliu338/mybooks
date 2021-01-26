@@ -5,6 +5,7 @@ namespace App\Controller;
 use Cake\I18n\Date;
 use Cake\Core\Configure;
 use App\Form\TransactionForm;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Transactions Controller
@@ -106,6 +107,116 @@ class TransactionsController extends AppController
 			$this->add_edit_get($transaction, $account1->id);
         } 
         $this->set(compact('transaction', 'account1'));
+    }
+    
+    public function earnsInterest() {
+		$transaction = $this->Transactions->newEmptyEntity();
+		$this->loadModel('Entries');
+		$account1 = $this->Accounts->get(
+			$this->request->getQuery('account_id', '1'),
+			['contain'=>'Tags']
+		);
+        if ($this->request->is('post') && !$this->request->is('ajax')) {
+        	$data = $this->request->getData();
+        	$connection = ConnectionManager::get('default');
+        	$error = null;
+			$transaction = $this->Transactions->patchEntity($transaction, $data);
+        	$result = $connection->transactional(function() use 
+        		($transaction, $data, $account1, &$error) {
+				if ($data['entry1_homeamount'] != $data['entry2_homeamount']
+					|| $data['entry1_homeamount']<0.005
+					|| $data['entry2_homeamount']<0.005
+					/*
+					|| !array_key_exists('entry1_homeamount', $data)
+					|| !array_key_exists('entry2_homeamount', $data)
+					*/
+					) {
+					//'Transaction not balanced';
+					return false;
+				}
+				if (!$this->Transactions->save($transaction)) {
+					$error = 'Error saving transaction';
+					return false;
+				}
+// NEED TO CATER FOR DIFF CURRENCY
+				$entry1 = $this->Entries->newEmptyEntity();
+				$entry1->home_amount = 0-$data['entry1_homeamount'];
+				$entry1->real_amount = 0-$data['entry1_homeamount'];
+				$entry1->account_id = $data['entry1_accountid'];
+				$entry1->transaction_id = $transaction->id;
+				$entry1->status = 'n';
+				$entry1->labels = '{}';
+				if (!$this->Entries->save($entry1)) {
+					$error = 'Error saving entry 1';
+					return false;
+				}
+				$entry2 = $this->Entries->newEmptyEntity();
+				$entry2->home_amount = $data['entry2_homeamount'];
+				$entry2->real_amount = $data['entry2_homeamount'];
+				$entry2->account_id = $data['entry2_accountid'];
+				$entry2->transaction_id = $transaction->id;
+				$entry2->status = 'n';
+				$labels = ['labels'=> [$account1->name]];
+				$entry2->labels = json_encode($labels);
+				if (!$this->Entries->save($entry2)) {
+					$error = 'Error saving entry 2';
+					return false;
+				}
+				return true;
+			});
+			if (!$result) {
+				$this->Flash->error('Error:' . $error); 
+			}
+			else {
+				$this->Flash->success(__('The transaction has been saved.'));
+				return $this->redirect(['controller'=>'Accounts',
+					'action' => 'view', $data['entry1_accountid']]);
+			}
+        }
+        $stock = $account1->containTags(['Stock']);
+            $transaction->date1 = $this->Session->get('transactionDate');
+            $transaction->description = $stock ? 'Dividend paid' : 'Interest earned';
+            $this->loadModel('Accounts');
+			// entry2 is interest
+			$entry2 = $this->Entries->newEmptyEntity();
+			if ($stock) {
+				$account2_choices = $this->Accounts->find('list')->where([
+					'name LIKE' => '%Dividend%'
+				]);
+				$entry2->account_id = 0; // default to first choice
+			}
+			else {
+				$entry2->account_id = $this->Accounts->findByName($account1->currency . 'BankInterest')->first()->id;
+				$account2_choices = $this->Accounts->find('list')->where([
+					'currency' => $account1->currency,
+					'name LIKE' => '%Interest%'
+				]);
+			}
+			// entry1 is bank
+			$entry1 = $this->Entries->newEmptyEntity();
+		if ($stock) {
+			$query = $this->Accounts->find('list');
+			$query->matching('Tags', function ($q) {
+				return $q->where(['Tags.name' => 'Bank',
+						'Accounts.currency'=>'HKD']);
+			});
+			//debug($query->toArray());
+			$account1_choices = $this->Accounts->find('list')->where([
+				'id IN' => array_keys($query->toArray())
+			]);
+			$entry1->account_id = 0;//$account1->id;
+		}
+		else {
+			$entry1->account_id = $account1->id;
+			$account1_choices = $this->Accounts->find('list')->where([
+				'currency' => $account1->currency,
+				'code LIKE' => substr($account1->code, 0, 4) . '%'
+			]);
+		}
+		$this->set(compact('account1', 'transaction',
+			'entry1', 'account1_choices',
+			'entry2', 'account2_choices'
+		));
     }
 
     /**

@@ -38,4 +38,26 @@ class Account extends Entity
         'entries' => true,
         'tags' => true,
     ];
+    
+    /**
+    @return whether this account can earn interest
+    */
+    public function earnsInterest() {
+    	$bank = false;
+    	$checking = false;
+    	foreach ($this->tags as $tag) {
+    		if ($tag->name == 'Bank')
+    			$bank = true;
+    		else if ($tag->name == 'CheckingAccounts')
+    			$checking = true;
+    	}
+    	return $bank && !$checking;
+    }
+    
+    public function containTags(array $tags) {
+    	return !empty(array_filter($this->tags, function ($tag) use ($tags) {
+			return in_array($tag->name, $tags); 
+    	}));
+    }
+    
 }
