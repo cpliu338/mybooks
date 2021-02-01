@@ -98,13 +98,14 @@
 			value="<?= $entry->getAsList('labels')?>">
 	</td>
 	<?php if (!$summary): ?>
-			<td class="actions">
-<?= $this->Html->link('', '#', ['class'=>'fa fa-tag update-labels', 'title'=>__('Update labels')]) ?>
-<?= $this->Html->link('', '#', ['class'=>'fa fa-search view-tran', 'title'=>__('View transaction')]) ?>
-				<?= $this->Form->postLink('', ['controller' => 'Entries', 'action' => 'delete', $entry->id], [
-						'class'=>'fa fa-minus-circle', 'title'=>__('Delete'),
-						'confirm' => __('Are you sure you want to delete # {0}?', $entry->id)]) ?>
-			</td>
+		<td class="actions">
+			<?= $this->Html->link('', '#', ['class'=>'fa fa-tag update-labels', 'title'=>__('Update labels')]) ?>
+			<?= $this->Html->link('', '#', ['class'=>'fa fa-search view-tran', 'title'=>__('View transaction')]) ?>
+			<?= $this->Html->link('', '#', ['class'=>'fa fa-check reconcile', 'title'=>__('Reconcile')]) ?>
+			<?= $this->Form->postLink('', ['controller' => 'Entries', 'action' => 'delete', $entry->id], [
+					'class'=>'fa fa-minus-circle', 'title'=>__('Delete'),
+					'confirm' => __('Are you sure you want to delete # {0}?', $entry->id)]) ?>
+		</td>
 	<?php endif; ?>
 		</tr>
 		<?php endforeach; ?>
@@ -116,6 +117,23 @@
 	</table>
 </div> <!-- table responsive -->
 <?php endif; ?>
+<div id='check-reconcile' class="table-unresponsive">
+	<table>
+	<tr><td>Date</td><td id="recon-date">
+	</td></tr>
+	<tr><td>Balance</td><td id="recon-balance">
+	</td></tr>
+	<tfoot><tr><td>
+	<form method="post" action="/entries/reconcile">
+		<input type="hidden" name="_method" value="POST"/>
+		<input type="hidden" name="_csrfToken" autocomplete="off" 
+		value='<?=$this->request->getAttribute('csrfToken')?>'/>
+		<input type="hidden" name="recon_id" id="recon-id" val="">
+		<?= $this->Form->button(__('Submit')) ?>
+            </form>
+	</td></tr></tfoot>
+	</table>
+</div>
 <div id='view-transaction' class="table-unresponsive">
 	<table>
 		<thead><tr>
@@ -144,6 +162,14 @@
 			element.html(textStatus);
 		});
 	});			
+	$(".reconcile").click(function() {
+		tr = $(this).closest("tr");
+		id = tr.data("entryid");
+		$("#recon-date").text(tr.children().eq(0).text());
+		$("#recon-balance").text(tr.children().eq(4).text());
+		$("#recon-id").val(id);
+		$("#check-reconcile").dialog("open");
+	});
 	$(".update-labels").click(function() {
 		element = $(this);
 		entryid = $(this).parent().parent().data("entryid");
@@ -174,6 +200,11 @@
 		});
 	});			
 $(function() {
+	$("#check-reconcile").dialog({
+		autoOpen: false,
+		title: 'Check reconcile',
+		width: "auto"
+	});
 	$("#view-transaction").dialog({
 		autoOpen: false,
 		title: 'View trans',

@@ -57,6 +57,27 @@ class EntriesController extends AppController
         $this->set(compact('entry', 'peers'));
 		$this->viewBuilder()->setOption('serialize', ['entry', 'peers']);
     }
+    
+    public function reconcile($id=null) {
+    	$entry = $this->Entries->get($this->request->getData('recon_id'),
+    		['contain'=>['Transactions']]);
+    	$ar = $this->Entries->find()->where([
+			'status'=>'n',			
+			'account_id'=>$entry->account_id
+		])->matching('Transactions', function ($q) use ($entry) {
+			return $q->where(['Transactions.date1 <=' => $entry->transaction->date1]);
+		})->extract('id')->toArray();
+		if (is_array($ar) && !empty($ar)) {
+	    	$result = $this->Entries->updateAll(['status'=>'c'],
+				['id IN' => $ar]);
+			$this->Flash->success(var_export($result, true));
+		}
+		else {
+    		$this->Flash->error(__('The entry has not been reconciled.') 
+    			);
+    	}
+		return $this->redirect(['controller'=>'Accounts', 'action' => 'view', $entry->account_id]);
+    }
 
     /**
      * Add method

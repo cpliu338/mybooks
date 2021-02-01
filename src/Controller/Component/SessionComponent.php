@@ -14,12 +14,17 @@ use Cake\Controller\Component;
 class SessionComponent extends Component
 {
 	private $defaultValues;
+	private $defaultArrays;
+	
     public function initialize(array $config): void
     {
     	$this->defaultValues = [
 		'bfDate' => (FrozenDate::now()->subDays(100))->i18nFormat('yyyy-MM-dd'),
 		'transactionDate' => (FrozenDate::now()->subDays(100))->i18nFormat('yyyy-MM-dd'),
 		'tagFilter' => "0",
+		];
+		$this->defaultArrays = [
+			'accounts' => [];
 		];
     }	
 	public function set(string $key, string $value) {
@@ -36,5 +41,27 @@ class SessionComponent extends Component
 			$this->getController()->getRequest()->getSession()->read($key, $this->defaultValues[$key])
 		:
 			false;
+	}
+	public function getArray(string $key) {
+		return (array_key_exists($key, $this->defaultValues)) ?
+			$this->getController()->getRequest()->getSession()->read($key, $this->defaultArrays[$key])
+		:
+			[];
+	}
+	public function pushArray(string $key, string $value) {
+		$ar = $this->getArray($key);
+		$max = 5;
+		$index = array_search($value, $ar));
+		if ($index !== false) {
+			$b = array_splice($ar, $index, 1);
+			$ar = array_merge($ar, $b);
+		}
+		else {
+			if (count($ar) > $max) {
+				array_shift($ar);
+			}
+			array_push($ar, $value);
+		}
+		$this->getController()->getRequest()->getSession()->write($key, $ar);
 	}
 }

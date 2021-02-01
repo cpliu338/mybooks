@@ -111,18 +111,24 @@ class TransactionsController extends AppController
     
     public function earnsInterest() {
 		$transaction = $this->Transactions->newEmptyEntity();
-		$this->loadModel('Entries');
+		$this->loadModel('Entries');          
+		$account1_id = $this->request->getQuery('account_id', '1'); 
 		$account1 = $this->Accounts->get(
-			$this->request->getQuery('account_id', '1'),
+			$account1_id,
 			['contain'=>'Tags']
 		);
+		$account0 = $this->Accounts->findByCode(substr($account1->code, 0, 4))->first();
+/*		$this->Flash->success("code like " . 
+		$account0 ? $account0->name : "Not found");
+				return $this->redirect(['controller'=>'Accounts',
+					'action' => 'view', $account1_id]);*/
         if ($this->request->is('post') && !$this->request->is('ajax')) {
         	$data = $this->request->getData();
         	$connection = ConnectionManager::get('default');
         	$error = null;
 			$transaction = $this->Transactions->patchEntity($transaction, $data);
         	$result = $connection->transactional(function() use 
-        		($transaction, $data, $account1, &$error) {
+        		($transaction, $data, $account1, $account0, &$error) {
 				if ($data['entry1_homeamount'] != $data['entry2_homeamount']
 					|| $data['entry1_homeamount']<0.005
 					|| $data['entry2_homeamount']<0.005
@@ -156,7 +162,8 @@ class TransactionsController extends AppController
 				$entry2->account_id = $data['entry2_accountid'];
 				$entry2->transaction_id = $transaction->id;
 				$entry2->status = 'n';
-				$labels = ['labels'=> [$account1->name]];
+				$labels = ['labels'=> [$account0 ? $account0->name : "Not found",
+					$account1->name]];
 				$entry2->labels = json_encode($labels);
 				if (!$this->Entries->save($entry2)) {
 					$error = 'Error saving entry 2';
