@@ -124,7 +124,7 @@
 	<tr><td>Balance</td><td id="recon-balance">
 	</td></tr>
 	<tfoot><tr><td>
-	<form method="post" action="/entries/reconcile">
+	<form method="post" action="<?=$this->url->build(['controller'=>'Entries', 'action'=>'reconcile'])?>">
 		<input type="hidden" name="_method" value="POST"/>
 		<input type="hidden" name="_csrfToken" autocomplete="off" 
 		value='<?=$this->request->getAttribute('csrfToken')?>'/>
