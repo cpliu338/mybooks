@@ -58,7 +58,12 @@ class AccountsController extends AppController
     {
         $account = $this->Accounts->get($id, [
             'contain' => ($this->request->is('ajax') ? [] : ['Tags']),
-        ]);//debug($account->get('currency'));
+        ]);
+        $ac_ids = $this->Session->pushArray('account_tray', $id);
+        $this->set('tray_accounts', 
+        	empty($ac_ids) ? [] :
+        	$this->Accounts->find()->where(['id IN'=>$ac_ids])
+        );
         $bfDate = $this->Session->get('bfDate');
         $condition = ['Entries.account_id'=>$account->id];
         $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),

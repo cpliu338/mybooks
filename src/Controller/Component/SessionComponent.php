@@ -24,7 +24,7 @@ class SessionComponent extends Component
 		'tagFilter' => "0",
 		];
 		$this->defaultArrays = [
-			'accounts' => [];
+			'account_tray' => [],
 		];
     }	
 	public function set(string $key, string $value) {
@@ -43,7 +43,7 @@ class SessionComponent extends Component
 			false;
 	}
 	public function getArray(string $key) {
-		return (array_key_exists($key, $this->defaultValues)) ?
+		return (array_key_exists($key, $this->defaultArrays)) ?
 			$this->getController()->getRequest()->getSession()->read($key, $this->defaultArrays[$key])
 		:
 			[];
@@ -51,7 +51,7 @@ class SessionComponent extends Component
 	public function pushArray(string $key, string $value) {
 		$ar = $this->getArray($key);
 		$max = 5;
-		$index = array_search($value, $ar));
+		$index = array_search($value, $ar);
 		if ($index !== false) {
 			$b = array_splice($ar, $index, 1);
 			$ar = array_merge($ar, $b);
@@ -63,5 +63,6 @@ class SessionComponent extends Component
 			array_push($ar, $value);
 		}
 		$this->getController()->getRequest()->getSession()->write($key, $ar);
+		return $ar;
 	}
 }

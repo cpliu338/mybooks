@@ -4,6 +4,7 @@
  * @var \App\Model\Entity\Account $account
  */
 ?>
+<?= $this->element('account_tray')?>
 <div class="row">
     <div class="column-responsive column-100">
         <div class="accounts view content">
