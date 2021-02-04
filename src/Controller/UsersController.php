@@ -58,7 +58,7 @@ else
 	
 	public function settings() {
 		if ($this->request->is('get')) {
-			$this->log('get', 'info');
+			//$this->log('get', 'info');
         	$form = new SettingsForm();
         	$form->set([
 				'bfDate' => $this->Session->get('bfDate'),

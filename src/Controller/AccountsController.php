@@ -66,8 +66,9 @@ class AccountsController extends AppController
         );
         $bfDate = $this->Session->get('bfDate');
         $condition = ['Entries.account_id'=>$account->id];
-        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
-        	$bfDate);
+        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate])
+        	,30);
+        $this->set('more', $this->Accounts->Entries->find()->contain(['Transactions'])->where($condition)->count() - 30);
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate, 'home_amount');
 		$this->loadModel('Commodities');
@@ -91,8 +92,9 @@ class AccountsController extends AppController
         ]);
         $bfDate = $this->Session->get('bfDate');
         $condition = ['Accounts.code LIKE'=>$account->code . '%'];
-        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]),
-        	$bfDate);
+        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate])
+        	,30);
+        $this->set('more', $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->where($condition)->count() - 30);
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate, 'real_amount');
         $this->set(compact('account', 'bf', 'bfDate'));
@@ -133,9 +135,9 @@ class AccountsController extends AppController
 		$this->viewBuilder()->setOption('serialize', ['balance', 'account_id']);
     }
     
-    private function entriesInPeriod($condition, $bfDate) {
+    private function entriesInPeriod($condition, $limit) {
     	return  $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
-        	where($condition)->order('Transactions.date1, Entries.id');
+        	where($condition)->order('Transactions.date1, Entries.id')->limit($limit);
     }
 
     private function aggregateBefore($condition, $bfDate, $amount) {

@@ -58,6 +58,51 @@ class EntriesController extends AppController
 		$this->viewBuilder()->setOption('serialize', ['entry', 'peers']);
     }
     
+    public function setBfDate() {
+    	/* POST /users/settings ?bfDate=xxx&_csrfToken=yyy */
+    	if ($this->request->is('ajax')) {
+			$ar = [];
+			$account_id = $this->request->getQuery('account_id');
+			$summary = $this->request->getQuery('summary');
+			if ($summary) {
+				$account = $this->Entries->Accounts->get($account_id);
+				$cond = ['Entries.account_id IN'=>$this->Entries->Accounts->find()->where([
+					'Accounts.code LIKE'=>$account->code . '%'
+				])->extract('id')->toArray()];
+			}
+			else {
+				$cond = ['Entries.account_id'=>$account_id];
+			}
+			$e = $this->Entries->find()->contain(['Transactions'])->where(
+				$cond
+			)->order('Transactions.date1')->first();
+			if (!empty($e))
+				$ar[$e->transaction->date1->i18nFormat('yyyy-MM-dd')] = 'first entry';
+			$e = $this->Entries->find()->contain(['Transactions'])->where(
+				array_merge($cond,
+				['Entries.status'=>'n']
+			))->order('Transactions.date1')->first();
+			if (!empty($e))
+				$ar[$e->transaction->date1->i18nFormat('yyyy-MM-dd')] = 'first non-cleared entry';
+			$e = $this->Entries->find()->contain(['Transactions'])->where(
+				array_merge($cond,
+				['Entries.status'=>'n']
+			))->order('Transactions.date1')->last();
+			if (!empty($e))
+				$ar[$e->transaction->date1->i18nFormat('yyyy-MM-dd')] = 'last non-cleared entry';
+			$e = $this->Entries->find()->contain(['Transactions'])->where(
+				$cond
+			)->order('Transactions.date1 desc')->limit(10)->last();
+			if (!empty($e))
+				$ar[$e->transaction->date1->i18nFormat('yyyy-MM-dd')] = 'recent entries';
+			$options = []; foreach ($ar as $date=>$text) {
+				array_push($options, compact('date','text'));
+			}
+			$this->set(compact('options', 'cond'));
+			$this->viewBuilder()->setOption('serialize', ['options', 'cond']);
+		}
+    }
+    
     public function reconcile($id=null) {
     	$entry = $this->Entries->get($this->request->getData('recon_id'),
     		['contain'=>['Transactions']]);

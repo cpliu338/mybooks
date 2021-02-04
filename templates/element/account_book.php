@@ -29,11 +29,25 @@
 	<?php endif; ?>
 		</tr></thead><tbody>
 		<tr>
-			<td><?= $bfDate ?></td><td>Brought Forward</td>
+			<td><?= $bfDate ?></td>
+			<td>Brought Forward</td>
 	<?php if ($summary): ?>
-			<td></td>
+			<td colspan='3'>
+	<?php else: ?>
+			<td colspan='2'>
 	<?php endif; ?>
-			<td></td><td></td>
+			<form method='post' action="<?=$this->url->build([
+				'controller'=>'Users', 'action'=>'settings',
+				 '?'=>['redirect'=> 
+				 	 $this->url->build([
+					 'controller'=>'Accounts', 'action'=>$summary?'summary-view':'view',
+					 $account->id])
+				 ]])?>">
+				<select id="bf-date" name="bfDate" >
+				<option value='0'>Change B/F Date</option>
+			</select>
+			<input type="hidden" name="_csrfToken" id="token">
+			</form></td>
 			<td class="balance">
 <?php 
 	switch (substr($account->code, 0, 1)) {
@@ -114,7 +128,11 @@
 	</tbody>
 	<tfoot>
 	<tr><td>&nbsp;</td></tr>
-	<tr><td>&nbsp;</td></tr>
+	<tr><td>&nbsp;</td><td>
+<?php if ($more > 0): ?>
+	<?=$more?> more
+<?php endif;?>
+	</td></tr>
 	</tr></tfoot>
 	</table>
 </div> <!-- table responsive -->
@@ -202,6 +220,30 @@
 		});
 	});			
 $(function() {
+	$("#bf-date").change(function (ev){
+		ev.preventDefault();
+		$(this).closest("form").submit();
+	});
+		$.ajax({
+			url: "<?=$this->url->build(['controller'=>'Entries',
+				'action'=>'setBfDate',
+				'?'=>['account_id'=> $account->id,
+					'summary'=>$summary?1:0]
+				], ['escape'=>false])?>",
+			dataType: 'json',
+			contentType: 'application/json; charset=UTF-8',
+			headers: {
+			"X-CSRF-Token": $('meta[name="csrfToken"]').attr('content')},
+		  	method: 'get'
+		}).success(function (content) {
+			content.options.forEach(function (o) {
+				element = $("<option></option>");
+				element.attr('value', o.date);
+				element.text(o.text);
+				$("#bf-date").append(element);
+			});
+			$("#token").val($('meta[name="csrfToken"]').attr('content'));
+		});
 	$("#check-reconcile").dialog({
 		autoOpen: false,
 		title: 'Check reconcile',
