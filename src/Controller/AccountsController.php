@@ -135,7 +135,7 @@ class AccountsController extends AppController
     
     private function entriesInPeriod($condition, $bfDate) {
     	return  $this->Accounts->Entries->find()->contain(['Accounts', 'Transactions'])->
-        	where($condition)->order('Transactions.date1')->order('Transactions.date1');
+        	where($condition)->order('Transactions.date1, Entries.id');
     }
 
     private function aggregateBefore($condition, $bfDate, $amount) {

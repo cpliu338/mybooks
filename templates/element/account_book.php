@@ -102,9 +102,11 @@
 			<?= $this->Html->link('', '#', ['class'=>'fa fa-tag update-labels', 'title'=>__('Update labels')]) ?>
 			<?= $this->Html->link('', '#', ['class'=>'fa fa-search view-tran', 'title'=>__('View transaction')]) ?>
 			<?= $this->Html->link('', '#', ['class'=>'fa fa-check reconcile', 'title'=>__('Reconcile')]) ?>
+<?php if ($entry->status == 'n'):?> 
 			<?= $this->Form->postLink('', ['controller' => 'Entries', 'action' => 'delete', $entry->id], [
 					'class'=>'fa fa-minus-circle', 'title'=>__('Delete'),
 					'confirm' => __('Are you sure you want to delete # {0}?', $entry->id)]) ?>
+<?php endif;?>
 		</td>
 	<?php endif; ?>
 		</tr>
