@@ -38,11 +38,9 @@
 	<?php endif; ?>
 			<form method='post' action="<?=$this->url->build([
 				'controller'=>'Users', 'action'=>'settings',
-				 '?'=>['redirect'=> 
-				 	 $this->url->build([
-					 'controller'=>'Accounts', 'action'=>$summary?'summary-view':'view',
-					 $account->id])
-				 ]])?>">
+				 '?'=>['redirect'=> "/accounts/" . ($summary?'summary-view':'view') . '/' .
+					 $account->id]
+				 ])?>">
 				<select id="bf-date" name="bfDate" >
 				<option value='0'>Change B/F Date</option>
 			</select>

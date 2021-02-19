@@ -66,9 +66,13 @@ class AccountsController extends AppController
         );
         $bfDate = $this->Session->get('bfDate');
         $condition = ['Entries.account_id'=>$account->id];
-        $account->entries = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate])
-        	,30);
-        $this->set('more', $this->Accounts->Entries->find()->contain(['Transactions'])->where($condition)->count() - 30);
+        $query = $this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate])
+        	,10);
+        $all_count = $query->count();
+        $account->entries = $query->toArray();
+        $this->set('more', // $this->Accounts->Entries->find()->contain(['Transactions'])->where($condition)->count() - 30);
+        	//$this->entriesInPeriod(array_merge($condition, ['Transactions.date1 >=' => $bfDate]), 1000000)->count() -
+        	$all_count - count($account->entries));
 		$bf = $this->aggregateBefore(array_merge($condition, ['Transactions.date1 <' => $bfDate]), 
 			$bfDate, 'home_amount');
 		$this->loadModel('Commodities');
