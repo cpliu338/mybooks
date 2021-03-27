@@ -234,7 +234,7 @@ class TransactionsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id = null)
-    {
+    {$this->set('upgrade', $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']);
     	$this->setupTagFilter();
     	//$tagfilter = $this->viewBuilder()->getVar('tagfilter');
         $transaction = $this->Transactions->get($id, [

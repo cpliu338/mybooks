@@ -7,7 +7,7 @@
 }
 </style>
 <?php $this->end(); ?>
-<?php if (!empty($account->entries)) : ?> 
+<?php if (!empty($account->entries) || (abs($bf) > 0.005)) : ?> 
 <?php
 	$amount = $summary ? 'real_amount' : 'home_amount';
 ?>
